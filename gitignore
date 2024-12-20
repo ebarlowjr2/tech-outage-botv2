@@ -1,0 +1,6 @@
+# API Keys
+config/*.json
+
+# MacOS system files
+.DS_Store
+
