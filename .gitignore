@@ -1,19 +1,12 @@
-# API Keys and Config Files
+# API Keys
 config/*.json
 
-# MacOS system files
-.DS_Store
-
-# Virtual Environment
+# Virtual environment
 venv/
 
-# Python Cache Files
+# Python cache files
 *.pyc
 __pycache__/
 
-# Logs
-*.log
-
-# IDE Specific Files (Optional)
-.vscode/
-.idea/
+# System files
+.DS_Store
