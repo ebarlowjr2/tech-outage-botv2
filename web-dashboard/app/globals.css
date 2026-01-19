@@ -3,12 +3,83 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 255, 255, 255;
-  --background-start-rgb: 0, 0, 0;
-  --background-end-rgb: 0, 0, 0;
+  --bg0: #05070d;
+  --bg1: #070b14;
+  --panel: rgba(10, 16, 28, 0.62);
+  --panel2: rgba(10, 16, 28, 0.82);
+  --stroke: rgba(90, 240, 255, 0.22);
+  --stroke2: rgba(190, 110, 255, 0.18);
+  --text: rgba(240, 248, 255, 0.92);
+  --muted: rgba(240, 248, 255, 0.62);
+  --good: rgba(50, 255, 180, 0.95);
+  --warn: rgba(255, 200, 80, 0.95);
+  --bad: rgba(255, 90, 120, 0.95);
 }
 
+html,
 body {
-  color: rgb(var(--foreground-rgb));
-  background: black;
+  height: 100%;
+  background: radial-gradient(1200px 800px at 20% 10%, rgba(120, 220, 255, 0.14), transparent 55%),
+    radial-gradient(900px 700px at 80% 30%, rgba(190, 110, 255, 0.12), transparent 60%),
+    linear-gradient(180deg, var(--bg0), var(--bg1));
+  color: var(--text);
+}
+
+.cyber-grid::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(circle at 30% 20%, rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.35), transparent 70%);
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.glass {
+  background: var(--panel);
+  border: 1px solid var(--stroke);
+  backdrop-filter: blur(14px);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.02) inset,
+    0 12px 32px rgba(0, 0, 0, 0.45);
+  border-radius: 18px;
+}
+
+.glow-edge {
+  position: relative;
+}
+
+.glow-edge::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: 18px;
+  background: linear-gradient(90deg, rgba(90, 240, 255, 0.35), rgba(190, 110, 255, 0.25), rgba(90, 240, 255, 0.35));
+  filter: blur(10px);
+  opacity: 0.35;
+  z-index: -1;
+}
+
+.kpi {
+  background: var(--panel2);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+}
+
+.badge-good {
+  border-color: rgba(50, 255, 180, 0.35);
+  color: var(--good);
+}
+
+.badge-warn {
+  border-color: rgba(255, 200, 80, 0.35);
+  color: var(--warn);
+}
+
+.badge-bad {
+  border-color: rgba(255, 90, 120, 0.35);
+  color: var(--bad);
 }
