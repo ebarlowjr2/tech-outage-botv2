@@ -2,20 +2,26 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
+import { supabase } from "@/lib/supabaseClient";
+import dynamic from 'next/dynamic';
+import RobotWidget from "./components/RobotWidget";
+
+// Dynamic import for Map to avoid SSR issues
+const CyberMap = dynamic(() => import('./components/CyberMap'), {
+  ssr: false,
+  loading: () => <div className="w-full h-full bg-black/50 animate-pulse rounded-xl flex items-center justify-center text-cyan-500/50">INITIALIZING GEOSPATIAL UPLINK...</div>
+});
 
 type Incident = {
   id: string;
-  provider: string;
+  provider: string; // We might need to join/fetch this, but for now lets assume flat or we fetch it
   title: string;
   severity: "good" | "warn" | "bad";
+  status: string;
   region?: string;
   updatedAt: string;
+  // Raw fields from DB might differ, we map them
 };
-
-const demo: Incident[] = [
-  { id: "1", provider: "AWS", title: "No active incidents", severity: "good", region: "GLOBAL", updatedAt: new Date().toISOString() },
-  { id: "2", provider: "GitHub", title: "No active incidents", severity: "good", region: "GLOBAL", updatedAt: new Date().toISOString() },
-];
 
 function SeverityPill({ s }: { s: Incident["severity"] }) {
   const cls = s === "good" ? "badge-good" : s === "warn" ? "badge-warn" : "badge-bad";
@@ -29,146 +35,162 @@ function SeverityPill({ s }: { s: Incident["severity"] }) {
 }
 
 export default function Page() {
-  // TODO: replace with Supabase realtime incidents
-  const [incidents, setIncidents] = useState<Incident[]>(demo);
+  const [incidents, setIncidents] = useState<Incident[]>([]);
+
+  // FETCH DATA
+  useEffect(() => {
+    fetchIncidents();
+
+    const channel = supabase
+      .channel('realtime-incidents')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'incidents' }, () => {
+        fetchIncidents();
+      })
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); }
+  }, []);
+
+  async function fetchIncidents() {
+    // Join with providers table
+    const { data, error } = await supabase
+      .from('incidents')
+      .select(`
+        *,
+        providers ( name )
+      `)
+      .eq('active', true)
+      .order('last_update', { ascending: false });
+
+    if (data) {
+      const mapped = data.map((row: any) => ({
+        id: row.id,
+        provider: row.providers?.name || "Unknown",
+        title: row.title,
+        severity: row.severity === 'critical' ? 'bad' : row.severity === 'major' ? 'warn' : 'good',
+        status: row.status,
+        region: "GLOBAL", // Default for now until we join regions
+        updatedAt: row.last_update
+      }));
+      setIncidents(mapped as Incident[]);
+    }
+  }
 
   const activeCounts = useMemo(() => {
     const bad = incidents.filter(i => i.severity === "bad").length;
     const warn = incidents.filter(i => i.severity === "warn").length;
-    const ok = incidents.filter(i => i.severity === "good").length;
+    const ok = incidents.filter(i => i.severity === "good" || i.severity === undefined).length;
     return { bad, warn, ok };
   }, [incidents]);
 
   // ticker text
   const ticker = useMemo(() => {
-    const items = incidents.map(i => `${i.provider}: ${i.title} (${i.region ?? "—"})`);
-    return items.length ? items.join("  •  ") : "Standing by for telemetry…";
+    const items = incidents.map(i => `${i.provider}: ${i.title} (${i.status})`);
+    return items.length ? items.join("  ///  ") : "NO ACTIVE THREATS DETECTED  ///  SYSTEMS NOMINAL";
   }, [incidents]);
 
   return (
     <div className="relative min-h-screen overflow-hidden">
       <div className="cyber-grid absolute inset-0" />
-      <div className="relative mx-auto max-w-[1400px] px-5 py-6">
+
+      {/* Robot Overlay (Absolute) */}
+      <RobotWidget />
+
+      <div className="relative mx-auto max-w-[1600px] px-5 py-6 h-screen flex flex-col">
         {/* Top bar */}
-        <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center justify-between gap-4 shrink-0">
           <div>
             <div className="text-xs tracking-[0.35em] text-[color:var(--muted)]">LIVE • TECH OUTAGE COMMAND</div>
-            <div className="text-2xl font-semibold">Cyber Outage Tracker Y’all</div>
+            <div className="text-2xl font-semibold tracking-tight text-white/90">CYBERWATCH <span className="text-cyan-400">V2.0</span></div>
           </div>
           <div className="flex items-center gap-3">
-            <div className="kpi px-4 py-2">
-              <div className="text-[11px] tracking-[0.25em] text-[color:var(--muted)]">ACTIVE OUTAGES</div>
-              <div className="text-lg font-semibold">{activeCounts.bad}</div>
+            <div className="kpi px-4 py-2 min-w-[120px]">
+              <div className="text-[10px] tracking-[0.2em] text-[color:var(--muted)] text-center">CRITICAL</div>
+              <div className="text-2xl font-bold text-center text-red-500">{activeCounts.bad}</div>
             </div>
-            <div className="kpi px-4 py-2">
-              <div className="text-[11px] tracking-[0.25em] text-[color:var(--muted)]">DEGRADED</div>
-              <div className="text-lg font-semibold">{activeCounts.warn}</div>
+            <div className="kpi px-4 py-2 min-w-[120px]">
+              <div className="text-[10px] tracking-[0.2em] text-[color:var(--muted)] text-center">DEGRADED</div>
+              <div className="text-2xl font-bold text-center text-yellow-500">{activeCounts.warn}</div>
             </div>
-            <div className="kpi px-4 py-2">
-              <div className="text-[11px] tracking-[0.25em] text-[color:var(--muted)]">NORMAL</div>
-              <div className="text-lg font-semibold">{activeCounts.ok}</div>
+            <div className="kpi px-4 py-2 min-w-[120px]">
+              <div className="text-[10px] tracking-[0.2em] text-[color:var(--muted)] text-center">OPERATIONAL</div>
+              <div className="text-2xl font-bold text-center text-teal-400">{activeCounts.ok}</div>
             </div>
           </div>
         </div>
 
-        {/* Main grid */}
-        <div className="mt-6 grid grid-cols-12 gap-5">
+        {/* Main grid (Flex grow to fill screen) */}
+        <div className="mt-6 grid grid-cols-12 gap-5 flex-1 min-h-0">
+
           {/* Map/scene panel */}
-          <div className="col-span-12 lg:col-span-8 glass glow-edge p-4 min-h-[560px]">
-            <div className="flex items-center justify-between">
-              <div className="text-sm tracking-[0.22em] text-[color:var(--muted)]">THREATMAP VIEW</div>
-              <div className="text-xs text-[color:var(--muted)]">AU/NOC projection • simulated</div>
+          <div className="col-span-12 lg:col-span-8 glass glow-edge p-1 flex flex-col relative group">
+            {/* Map Header Overlay */}
+            <div className="absolute top-4 left-4 z-[400] bg-black/60 backdrop-blur px-3 py-1 rounded border border-white/10 pointer-events-none">
+              <div className="text-xs tracking-[0.2em] text-cyan-400">GLOBAL THREAT MAP</div>
             </div>
 
-            {/* Placeholder map container */}
-            <div className="mt-4 rounded-2xl border border-white/10 bg-black/20 h-[500px] relative overflow-hidden">
-              <div className="absolute inset-0 opacity-70"
-                style={{
-                  backgroundImage:
-                    "radial-gradient(circle at 30% 30%, rgba(90,240,255,0.22), transparent 35%), radial-gradient(circle at 70% 40%, rgba(190,110,255,0.18), transparent 38%), radial-gradient(circle at 45% 70%, rgba(50,255,180,0.16), transparent 40%)"
-                }}
-              />
-              {/* Pulses */}
-              <motion.div
-                className="absolute left-[18%] top-[35%] w-3 h-3 rounded-full bg-[color:var(--bad)]"
-                animate={{ boxShadow: ["0 0 0 0 rgba(255,90,120,0.0)", "0 0 0 18px rgba(255,90,120,0.12)", "0 0 0 0 rgba(255,90,120,0.0)"] }}
-                transition={{ duration: 2.2, repeat: Infinity }}
-              />
-              <motion.div
-                className="absolute left-[62%] top-[46%] w-3 h-3 rounded-full bg-[color:var(--warn)]"
-                animate={{ boxShadow: ["0 0 0 0 rgba(255,200,80,0.0)", "0 0 0 16px rgba(255,200,80,0.12)", "0 0 0 0 rgba(255,200,80,0.0)"] }}
-                transition={{ duration: 2.6, repeat: Infinity, delay: 0.4 }}
-              />
-
-              <div className="absolute bottom-3 left-3 text-xs text-[color:var(--muted)]">
-                Replace this panel with MapLibre/Deck.gl and plot incidents by region lat/lon.
-              </div>
+            <div className="w-full h-full rounded-lg overflow-hidden relative bg-[#05070d]">
+              <CyberMap incidents={incidents} />
             </div>
           </div>
 
           {/* Right column */}
-          <div className="col-span-12 lg:col-span-4 grid gap-5">
-            {/* Robot presenter */}
-            <div className="glass glow-edge p-4">
-              <div className="flex items-center justify-between">
-                <div className="text-sm tracking-[0.22em] text-[color:var(--muted)]">PRESENTER</div>
-                <span className="text-xs text-[color:var(--muted)]">BOT STATUS: IDLE</span>
-              </div>
-              <div className="mt-4 flex items-center gap-4">
-                <div className="w-16 h-16 rounded-2xl border border-white/10 bg-gradient-to-br from-cyan-400/20 to-purple-400/10 flex items-center justify-center">
-                  <span className="text-lg">🤖</span>
-                </div>
-                <div className="flex-1">
-                  <div className="text-lg font-semibold">N.O.C. BOT</div>
-                  <div className="text-sm text-[color:var(--muted)]">Standing by for new incident telemetry.</div>
-                </div>
-              </div>
-
-              <div className="mt-4 rounded-xl border border-white/10 bg-black/20 p-3 text-sm text-[color:var(--muted)]">
-                Captions will appear here when TTS plays.
-              </div>
-            </div>
+          <div className="col-span-12 lg:col-span-4 flex flex-col gap-4 overflow-hidden">
 
             {/* Incident list */}
-            <div className="glass glow-edge p-4">
-              <div className="text-sm tracking-[0.22em] text-[color:var(--muted)]">ACTIVE FEED</div>
-              <div className="mt-3 space-y-3">
+            <div className="glass glow-edge flex-1 flex flex-col min-h-0">
+              <div className="p-4 border-b border-white/5 bg-white/5">
+                <div className="text-xs tracking-[0.2em] text-[color:var(--muted)]">ACTIVE INCIDENTS ({incidents.length})</div>
+              </div>
+              <div className="p-2 space-y-2 overflow-y-auto flex-1">
+                {incidents.length === 0 && (
+                  <div className="h-full flex items-center justify-center text-white/20 text-sm tracking-widest animate-pulse">
+                    NO ACTIVE SIGNALS
+                  </div>
+                )}
                 {incidents.map(i => (
-                  <div key={i.id} className="rounded-2xl border border-white/10 bg-black/20 p-3">
+                  <div key={i.id} className="rounded border border-white/5 bg-black/40 p-3 hover:bg-white/5 transition-colors group">
                     <div className="flex items-center justify-between gap-3">
-                      <div className="font-semibold">{i.provider}</div>
+                      <div className="font-bold text-sm text-cyan-100 group-hover:text-cyan-400 transition-colors">{i.provider}</div>
                       <SeverityPill s={i.severity} />
                     </div>
-                    <div className="mt-1 text-sm text-[color:var(--muted)]">{i.title}</div>
-                    <div className="mt-2 text-xs text-white/45 flex justify-between">
-                      <span>{i.region ?? "—"}</span>
-                      <span>{new Date(i.updatedAt).toLocaleString()}</span>
+                    <div className="mt-1 text-sm text-gray-400">{i.title}</div>
+                    <div className="mt-2 text-xs text-white/30 flex justify-between font-mono">
+                      <span>{i.updatedAt ? new Date(i.updatedAt).toLocaleTimeString() : 'Unknown'}</span>
+                      <span>#{i.id.slice(0, 4)}</span>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Quick actions */}
-            <div className="glass glow-edge p-4">
-              <div className="text-sm tracking-[0.22em] text-[color:var(--muted)]">STREAM HEALTH</div>
-              <div className="mt-3 text-sm text-[color:var(--muted)]">
-                Add: bitrate target, last ingest time, OpenAI/TTS status, and “last spoken” timestamp.
+            {/* Quick actions / Stream Status */}
+            <div className="glass glow-edge p-4 shrink-0">
+              <div className="text-xs tracking-[0.2em] text-[color:var(--muted)] mb-2">SYSTEM STATUS</div>
+              <div className="grid grid-cols-2 gap-2 text-xs font-mono">
+                <div className="bg-white/5 p-2 rounded text-center">
+                  <div className="text-gray-500">INGEST</div>
+                  <div className="text-green-400">ONLINE</div>
+                </div>
+                <div className="bg-white/5 p-2 rounded text-center">
+                  <div className="text-gray-500">TTS ENGINE</div>
+                  <div className="text-cyan-400">READY</div>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
         {/* Bottom ticker */}
-        <div className="mt-5 glass glow-edge overflow-hidden">
-          <div className="px-4 py-3 border-b border-white/10 text-xs tracking-[0.25em] text-[color:var(--muted)]">
-            LIVE INCIDENT TICKER
+        <div className="mt-4 glass glow-edge overflow-hidden shrink-0 h-10 flex items-center bg-black/60">
+          <div className="px-4 h-full flex items-center border-r border-white/10 bg-red-500/10 text-red-400 text-xs font-bold tracking-widest z-10">
+            BREAKING
           </div>
-          <div className="relative h-10">
+          <div className="flex-1 relative h-full flex items-center overflow-hidden">
             <motion.div
-              className="absolute whitespace-nowrap text-sm text-white/80 px-4"
+              className="absolute whitespace-nowrap text-sm font-mono text-cyan-50/80"
               animate={{ x: ["100%", "-100%"] }}
-              transition={{ duration: 28, repeat: Infinity, ease: "linear" }}
+              transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
             >
               {ticker}
             </motion.div>
