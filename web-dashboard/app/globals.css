@@ -53,25 +53,82 @@
 }
 
 :root {
+  /* === DESIGN SYSTEM TOKENS === */
+  
+  /* Background & Surfaces */
   --bg: #070A12;
+  --bg-deep: #050711;
   --panel: rgba(20, 27, 45, 0.62);
   --panel2: rgba(20, 27, 45, 0.82);
+  --panel-solid: #141B2D;
   --stroke: rgba(255, 255, 255, 0.08);
+  --stroke-hover: rgba(255, 255, 255, 0.15);
 
+  /* Typography */
   --text: rgba(245, 247, 255, 0.92);
+  --text-bright: rgba(255, 255, 255, 0.98);
   --muted: rgba(245, 247, 255, 0.62);
+  --muted-dim: rgba(245, 247, 255, 0.35);
 
-  /* Accents */
+  /* Accent Colors - Command Center Palette */
   --cyan: #5AF0FF;
+  --cyan-dim: rgba(90, 240, 255, 0.15);
+  --cyan-glow: rgba(90, 240, 255, 0.4);
+  
   --violet: #BE6EFF;
+  --violet-dim: rgba(190, 110, 255, 0.15);
+  --violet-glow: rgba(190, 110, 255, 0.4);
+  
   --lime: #32FFB4;
+  --lime-dim: rgba(50, 255, 180, 0.15);
+  --lime-glow: rgba(50, 255, 180, 0.4);
+  
   --amber: #FFC850;
+  --amber-dim: rgba(255, 200, 80, 0.15);
+  --amber-glow: rgba(255, 200, 80, 0.4);
+  
   --rose: #FF5A78;
+  --rose-dim: rgba(255, 90, 120, 0.15);
+  --rose-glow: rgba(255, 90, 120, 0.4);
 
-  /* Status */
+  /* Status Semantic Colors */
   --ok: var(--lime);
+  --ok-dim: var(--lime-dim);
   --warn: var(--amber);
+  --warn-dim: var(--amber-dim);
   --bad: var(--rose);
+  --bad-dim: var(--rose-dim);
+
+  /* Shadows & Effects */
+  --shadow-card: 0 18px 45px rgba(0, 0, 0, 0.45);
+  --shadow-elevated: 0 24px 60px rgba(0, 0, 0, 0.55);
+  --shadow-glow-cyan: 0 0 20px var(--cyan-glow);
+  --shadow-glow-lime: 0 0 20px var(--lime-glow);
+  --shadow-glow-amber: 0 0 20px var(--amber-glow);
+  --shadow-glow-rose: 0 0 20px var(--rose-glow);
+
+  /* Border Radius Scale */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  /* Spacing Scale */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+
+  /* Typography Scale */
+  --font-xs: clamp(9px, 0.9vw, 10px);
+  --font-sm: clamp(10px, 1vw, 12px);
+  --font-base: clamp(12px, 1.1vw, 14px);
+  --font-lg: clamp(14px, 1.3vw, 18px);
+  --font-xl: clamp(18px, 2vw, 24px);
+  --font-2xl: clamp(22px, 2.4vw, 32px);
+  --font-3xl: clamp(28px, 3vw, 44px);
 }
 
 /* Background with more color */
@@ -145,4 +202,302 @@ body {
 
 .animate-shimmer {
   animation: shimmer 3s ease-in-out infinite;
+}
+
+/* === COMPONENT STYLES === */
+
+/* Status Chip - Severity Badges */
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: var(--font-xs);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.status-chip-ok {
+  background: var(--ok-dim);
+  color: var(--ok);
+  border-color: rgba(50, 255, 180, 0.25);
+}
+
+.status-chip-warn {
+  background: var(--warn-dim);
+  color: var(--warn);
+  border-color: rgba(255, 200, 80, 0.25);
+}
+
+.status-chip-bad {
+  background: var(--bad-dim);
+  color: var(--bad);
+  border-color: rgba(255, 90, 120, 0.25);
+}
+
+/* Status Dot - Animated indicator */
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 8px currentColor;
+}
+
+.status-dot-pulse {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(0.85);
+  }
+}
+
+/* Provider Badge */
+.provider-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, rgba(255,255,255,0.12), rgba(255,255,255,0.04));
+  border: 1px solid var(--stroke);
+  font-size: var(--font-xs);
+  font-weight: 700;
+  color: var(--text);
+  text-transform: uppercase;
+  transition: all 0.2s ease;
+}
+
+.provider-badge:hover {
+  background: linear-gradient(135deg, rgba(255,255,255,0.18), rgba(255,255,255,0.08));
+  border-color: var(--stroke-hover);
+}
+
+/* Feed Item */
+.feed-item {
+  padding: var(--space-md);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--stroke);
+  background: rgba(255, 255, 255, 0.02);
+  transition: all 0.2s ease;
+}
+
+.feed-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--stroke-hover);
+  transform: translateY(-1px);
+}
+
+/* Live Capsule - Identity Element */
+.live-capsule {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(90deg, var(--cyan-dim), var(--violet-dim));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: var(--font-sm);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--text);
+}
+
+.live-capsule .live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--cyan);
+  box-shadow: 0 0 10px var(--cyan-glow);
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Presenter Orb - Avatar Container */
+.presenter-orb {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.presenter-orb-glow {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  filter: blur(12px);
+  opacity: 0.6;
+  transition: all 0.5s ease;
+}
+
+.presenter-orb-core {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Speaking State */
+.presenter-speaking .presenter-orb-glow {
+  opacity: 0.9;
+  animation: speaking-pulse 0.8s ease-in-out infinite;
+}
+
+@keyframes speaking-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 0.9;
+  }
+}
+
+/* On Air Light */
+.on-air-light {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  font-size: var(--font-xs);
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+}
+
+.on-air-light-inactive {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--stroke);
+  color: var(--muted-dim);
+}
+
+.on-air-light-active {
+  background: var(--rose-dim);
+  border: 1px solid var(--rose);
+  color: var(--rose);
+  animation: on-air-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes on-air-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 var(--rose-glow);
+  }
+  50% {
+    box-shadow: 0 0 20px 4px var(--rose-glow);
+  }
+}
+
+/* Caption Bar - Broadcast Subtitles Style */
+.caption-bar {
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-xl);
+  padding: var(--space-md) var(--space-lg);
+  box-shadow: var(--shadow-elevated);
+}
+
+.caption-text {
+  font-size: var(--font-lg);
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--text-bright);
+}
+
+/* Signal Bars */
+.signal-bars {
+  display: flex;
+  gap: 2px;
+  height: 4px;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.signal-bar {
+  flex: 1;
+  background: var(--cyan);
+  transition: opacity 0.3s ease;
+}
+
+/* KPI Tile Enhancement */
+.kpi-tile {
+  position: relative;
+  overflow: hidden;
+}
+
+.kpi-tile::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  border-radius: 1px;
+  opacity: 0.5;
+  transition: opacity 0.3s ease;
+}
+
+.kpi-tile:hover::after {
+  opacity: 1;
+}
+
+.kpi-tile-rose::after {
+  background: linear-gradient(90deg, var(--rose), transparent);
+}
+
+.kpi-tile-amber::after {
+  background: linear-gradient(90deg, var(--amber), transparent);
+}
+
+.kpi-tile-lime::after {
+  background: linear-gradient(90deg, var(--lime), transparent);
+}
+
+/* Time Badge */
+.time-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.05);
+  font-size: var(--font-xs);
+  font-family: monospace;
+  color: var(--muted);
+}
+
+/* Custom Scrollbar Enhancement */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(90, 240, 255, 0.2);
+  border-radius: 2px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(90, 240, 255, 0.4);
 }
