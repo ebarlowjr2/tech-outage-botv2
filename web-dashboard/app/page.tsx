@@ -51,16 +51,7 @@ export default function Page() {
         .order('last_update', { ascending: false });
 
       if (data) {
-        const mapped = data.map((row: any) => ({
-          id: row.id,
-          provider: row.providers?.name || "Unknown",
-          title: row.title,
-          severity: row.severity === 'critical' ? 'bad' : row.severity === 'major' ? 'warn' : 'good',
-          status: row.status,
-          region: "GLOBAL",
-          updatedAt: row.last_update
-        }));
-        setIncidents(mapped as Incident[]);
+        setIncidents(data.map((row) => mapIncidentRow(row as SupabaseIncidentRow)));
       }
     }
 
@@ -74,20 +65,12 @@ export default function Page() {
       .channel('realtime-incidents')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'incidents' }, (payload) => {
         // Update dashboard state
-        const row = payload.new as any;
+        const row = payload.new as SupabaseIncidentRow;
         if (row) {
+          const mapped = mapIncidentRow(row);
+
           setIncidents((prev) => {
             const idx = prev.findIndex((x) => x.id === row.id);
-            const mapped = {
-              id: row.id,
-              provider: row.providers?.name || "Unknown",
-              title: row.title,
-              severity: row.severity === 'critical' ? 'bad' : row.severity === 'major' ? 'warn' : 'good',
-              status: row.status,
-              region: "GLOBAL",
-              updatedAt: row.last_update
-            };
-
             if (idx === -1) return [mapped, ...prev];
             const next = [...prev];
             next[idx] = mapped;
