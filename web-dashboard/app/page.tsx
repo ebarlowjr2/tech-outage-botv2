@@ -1,37 +1,33 @@
-"use client";
-
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabaseClient";
 import dynamic from 'next/dynamic';
+import { Activity, AlertTriangle, CheckCircle, Globe, Server, Radio } from 'lucide-react';
 
-
-// Dynamic import for Map to avoid SSR issues
 // Dynamic import for Map to avoid SSR issues
 const CyberMap = dynamic(() => import('./components/CyberMap'), {
   ssr: false,
-  loading: () => <div className="w-full h-full bg-black/50 animate-pulse rounded-xl flex items-center justify-center text-cyan-500/50">INITIALIZING GEOSPATIAL UPLINK...</div>
+  loading: () => <div className="w-full h-full flex items-center justify-center text-cyan-500/50 animate-pulse">CONNECTING...</div>
 });
 
 import SystemPresenter from "./components/SystemPresenter";
 
 type Incident = {
   id: string;
-  provider: string; // We might need to join/fetch this, but for now lets assume flat or we fetch it
+  provider: string;
   title: string;
   severity: "good" | "warn" | "bad";
   status: string;
   region?: string;
   updatedAt: string;
-  // Raw fields from DB might differ, we map them
 };
 
-function SeverityPill({ s }: { s: Incident["severity"] }) {
-  const cls = s === "good" ? "badge-good" : s === "warn" ? "badge-warn" : "badge-bad";
+function StatusBadge({ s }: { s: Incident["severity"] }) {
+  const color = s === "good" ? "var(--lime)" : s === "warn" ? "var(--amber)" : "var(--rose)";
   const label = s === "good" ? "NORMAL" : s === "warn" ? "DEGRADED" : "OUTAGE";
   return (
-    <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border text-xs tracking-widest ${cls}`}>
-      <span className="w-1.5 h-1.5 rounded-full bg-current opacity-80" />
+    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border border-white/10 bg-white/5 text-[10px] font-bold tracking-wider" style={{ color: color, borderColor: `${color}40` }}>
+      <span className="w-1.5 h-1.5 rounded-full bg-current shadow-[0_0_8px_currentColor]" />
       {label}
     </span>
   );
@@ -72,7 +68,7 @@ export default function Page() {
         title: row.title,
         severity: row.severity === 'critical' ? 'bad' : row.severity === 'major' ? 'warn' : 'good',
         status: row.status,
-        region: "GLOBAL", // Default for now until we join regions
+        region: "GLOBAL",
         updatedAt: row.last_update
       }));
       setIncidents(mapped as Incident[]);
@@ -93,105 +89,159 @@ export default function Page() {
   }, [incidents]);
 
   return (
-    <div className="relative min-h-screen overflow-hidden">
-      <div className="cyber-grid absolute inset-0" />
+    <div className="relative min-h-screen overflow-hidden text-[color:var(--text)]">
+      {/* Background handled by globals.css body */}
 
-      {/* Robot Overlay (Absolute) */}
+      {/* Presenter Overlay */}
       <SystemPresenter />
 
-      <div className="relative mx-auto max-w-[1600px] px-5 py-6 h-screen flex flex-col">
-        {/* Top bar */}
-        <div className="flex items-center justify-between gap-4 shrink-0">
+      <div className="relative mx-auto max-w-[1600px] px-6 py-8 h-screen flex flex-col gap-6">
+
+        {/* Header & KPI Row */}
+        <div className="flex items-end justify-between gap-6 shrink-0">
           <div>
-            <div className="text-xs tracking-[0.35em] text-[color:var(--muted)] font-medium">LIVE • GLOBAL AVAILABILITY</div>
-            <div className="text-2xl font-semibold tracking-tight text-white/90">TECH OUTAGE <span className="text-cyan-400">WATCH</span></div>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-2 h-2 bg-[color:var(--cyan)] rounded-full animate-pulse" />
+              <div className="text-xs tracking-[0.3em] font-bold text-[color:var(--cyan)] opacity-80">LIVE • GLOBAL AVAILABILITY</div>
+            </div>
+            <h1 className="text-3xl font-bold tracking-tight text-white flex items-center gap-2">
+              TECH OUTAGE <span className="text-[color:var(--cyan)]">WATCH</span>
+            </h1>
           </div>
-          <div className="flex items-center gap-3">
-            <div className="kpi px-4 py-2 min-w-[140px]">
-              <div className="text-[10px] tracking-[0.1em] text-[color:var(--muted)] text-center font-medium">MAJOR OUTAGES</div>
-              <div className="text-2xl font-bold text-center text-red-500">{activeCounts.bad}</div>
+
+          <div className="flex items-center gap-4">
+            {/* Major Outages Tile */}
+            <div className="card px-5 py-3 min-w-[160px] flex items-center justify-between group hover:border-[color:var(--rose)] transition-colors">
+              <div>
+                <div className="text-[10px] tracking-widest text-[color:var(--muted)] font-bold mb-1">MAJOR OUTAGES</div>
+                <div className="text-3xl font-bold text-[color:var(--rose)]">{activeCounts.bad}</div>
+              </div>
+              <AlertTriangle className="w-6 h-6 text-[color:var(--rose)] opacity-50 group-hover:opacity-100 transition-opacity" />
             </div>
-            <div className="kpi px-4 py-2 min-w-[140px]">
-              <div className="text-[10px] tracking-[0.1em] text-[color:var(--muted)] text-center font-medium">PARTIAL DEGRADATION</div>
-              <div className="text-2xl font-bold text-center text-yellow-500">{activeCounts.warn}</div>
+
+            {/* Degradation Tile */}
+            <div className="card px-5 py-3 min-w-[160px] flex items-center justify-between group hover:border-[color:var(--amber)] transition-colors">
+              <div>
+                <div className="text-[10px] tracking-widest text-[color:var(--muted)] font-bold mb-1">DEGRADED</div>
+                <div className="text-3xl font-bold text-[color:var(--amber)]">{activeCounts.warn}</div>
+              </div>
+              <Activity className="w-6 h-6 text-[color:var(--amber)] opacity-50 group-hover:opacity-100 transition-opacity" />
             </div>
-            <div className="kpi px-4 py-2 min-w-[140px]">
-              <div className="text-[10px] tracking-[0.1em] text-[color:var(--muted)] text-center font-medium">OPERATIONAL APPS</div>
-              <div className="text-2xl font-bold text-center text-teal-400">{activeCounts.ok}</div>
+
+            {/* Operational Tile */}
+            <div className="card px-5 py-3 min-w-[160px] flex items-center justify-between group hover:border-[color:var(--lime)] transition-colors">
+              <div>
+                <div className="text-[10px] tracking-widest text-[color:var(--muted)] font-bold mb-1">OPERATIONAL</div>
+                <div className="text-3xl font-bold text-[color:var(--lime)]">{activeCounts.ok}</div>
+              </div>
+              <CheckCircle className="w-6 h-6 text-[color:var(--lime)] opacity-50 group-hover:opacity-100 transition-opacity" />
             </div>
           </div>
         </div>
 
-        {/* Main grid (Flex grow to fill screen) */}
-        <div className="mt-6 grid grid-cols-12 gap-5 flex-1 min-h-0">
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-12 gap-6 flex-1 min-h-0">
 
-          {/* Map/scene panel */}
-          <div className="col-span-12 lg:col-span-8 glass glow-edge p-1 flex flex-col relative group">
-            {/* Map Header Overlay */}
-            <div className="absolute top-4 left-4 z-[400] bg-black/60 backdrop-blur px-3 py-1 rounded border border-white/10 pointer-events-none">
-              <div className="text-xs tracking-[0.2em] text-cyan-400">GLOBAL SERVICE STATUS</div>
+          {/* Map Panel */}
+          <div className="col-span-12 lg:col-span-8 card card-accent relative flex flex-col p-1 overflow-hidden group">
+            {/* Map Overlay Header */}
+            <div className="absolute top-5 left-5 z-[400] flex items-center gap-3">
+              <div className="bg-black/60 backdrop-blur px-3 py-1.5 rounded-full border border-white/10 flex items-center gap-2">
+                <Globe className="w-3 h-3 text-[color:var(--cyan)]" />
+                <span className="text-xs font-bold tracking-widest text-white/90">LIVE MAP</span>
+              </div>
+              <div className="text-[10px] font-mono text-white/40">Last Updated: Just now</div>
             </div>
 
-            <div className="w-full h-full rounded-lg overflow-hidden relative bg-[#05070d]">
+            {/* Map Component */}
+            <div className="flex-1 rounded-xl overflow-hidden bg-[#05070d] relative">
+              <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.03] pointer-events-none mix-blend-overlay" />
               <CyberMap incidents={incidents} />
             </div>
           </div>
 
-          {/* Right column */}
-          <div className="col-span-12 lg:col-span-4 flex flex-col gap-4 overflow-hidden">
+          {/* Right Column: Feed */}
+          <div className="col-span-12 lg:col-span-4 flex flex-col gap-6 overflow-hidden">
 
-            {/* Incident list */}
-            <div className="glass glow-edge flex-1 flex flex-col min-h-0">
-              <div className="p-4 border-b border-white/5 bg-white/5">
-                <div className="text-xs tracking-[0.2em] text-[color:var(--muted)]">ACTIVE INCIDENTS ({incidents.length})</div>
+            {/* Feed Card */}
+            <div className="card card-accent flex-1 flex flex-col min-h-0">
+              <div className="p-4 border-b border-white/5 flex items-center justify-between">
+                <div className="text-xs tracking-[0.2em] font-bold text-[color:var(--muted)] flex items-center gap-2">
+                  <Radio className="w-3 h-3" />
+                  LIVE FEED
+                </div>
+                <span className="text-[10px] bg-white/5 px-2 py-0.5 rounded text-white/40">{incidents.length} Events</span>
               </div>
-              <div className="p-2 space-y-2 overflow-y-auto flex-1">
+
+              <div className="p-3 space-y-3 overflow-y-auto flex-1 custom-scrollbar">
                 {incidents.length === 0 && (
-                  <div className="h-full flex items-center justify-center text-white/20 text-sm tracking-widest animate-pulse">
-                    NO ACTIVE OUTAGES
+                  <div className="h-full flex flex-col items-center justify-center text-[color:var(--muted)] opacity-50 gap-3">
+                    <Server className="w-8 h-8 opacity-20" />
+                    <span className="text-xs tracking-widest">NO ACTIVE OUTAGES</span>
                   </div>
                 )}
+
                 {incidents.map(i => (
-                  <div key={i.id} className="rounded border border-white/5 bg-black/40 p-3 hover:bg-white/5 transition-colors group">
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="font-bold text-sm text-cyan-100 group-hover:text-cyan-400 transition-colors">{i.provider}</div>
-                      <SeverityPill s={i.severity} />
+                  <div key={i.id} className="p-3 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.06] hover:border-white/10 transition-all group cursor-default">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        {/* Provider Logo Mark */}
+                        <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-xs font-bold text-white/80">
+                          {i.provider.substring(0, 2).toUpperCase()}
+                        </div>
+                        <div>
+                          <div className="text-sm font-bold text-white/90 group-hover:text-[color:var(--cyan)] transition-colors">{i.provider}</div>
+                          <div className="text-[10px] font-mono text-white/40">#{i.id.slice(0, 4)}</div>
+                        </div>
+                      </div>
+                      <StatusBadge s={i.severity} />
                     </div>
-                    <div className="mt-1 text-sm text-gray-400">{i.title}</div>
-                    <div className="mt-2 text-xs text-white/30 flex justify-between font-mono">
-                      <span>{i.updatedAt ? new Date(i.updatedAt).toLocaleTimeString() : 'Unknown'}</span>
-                      <span>#{i.id.slice(0, 4)}</span>
+                    <div className="mt-2 text-xs text-[color:var(--muted)] leading-relaxed pl-[44px]">
+                      {i.title}
                     </div>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Quick actions / Stream Status */}
-            <div className="glass glow-edge p-4 shrink-0">
-              <div className="text-xs tracking-[0.2em] text-[color:var(--muted)] mb-2">SYSTEM STATUS</div>
-              <div className="grid grid-cols-2 gap-2 text-xs font-mono">
-                <div className="bg-white/5 p-2 rounded text-center">
-                  <div className="text-gray-500">INGEST</div>
-                  <div className="text-green-400">ONLINE</div>
+            {/* System Status / Signature Element */}
+            <div className="card p-4 shrink-0">
+              <div className="flex items-center justify-between mb-3">
+                <div className="text-[10px] tracking-widest text-[color:var(--muted)] font-bold">SYSTEM INTEGRITY</div>
+                <div className="w-1.5 h-1.5 rounded-full bg-[color:var(--lime)] shadow-[0_0_8px_var(--lime)]" />
+              </div>
+              <div className="space-y-2">
+                <div className="flex justify-between text-xs font-mono text-white/40">
+                  <span>DATA_INGEST</span>
+                  <span className="text-[color:var(--lime)]">OPTIMAL</span>
                 </div>
-                <div className="bg-white/5 p-2 rounded text-center">
-                  <div className="text-gray-500">TTS ENGINE</div>
-                  <div className="text-cyan-400">READY</div>
+                <div className="flex justify-between text-xs font-mono text-white/40">
+                  <span>NEURAL_VOICE</span>
+                  <span className="text-[color:var(--cyan)]">READY</span>
+                </div>
+                {/* Fake Signal Bar */}
+                <div className="h-1 bg-white/10 rounded-full mt-2 overflow-hidden flex gap-0.5">
+                  <div className="flex-1 bg-[color:var(--cyan)] opacity-20" />
+                  <div className="flex-1 bg-[color:var(--cyan)] opacity-40" />
+                  <div className="flex-1 bg-[color:var(--cyan)] opacity-60" />
+                  <div className="flex-1 bg-[color:var(--cyan)] opacity-80" />
+                  <div className="flex-1 bg-[color:var(--cyan)]" />
                 </div>
               </div>
             </div>
+
           </div>
         </div>
 
-        {/* Bottom ticker */}
-        <div className="mt-4 glass glow-edge overflow-hidden shrink-0 h-10 flex items-center bg-black/60">
-          <div className="px-4 h-full flex items-center border-r border-white/10 bg-red-500/10 text-red-400 text-xs font-bold tracking-widest z-10">
+        {/* Ticker Bottom */}
+        <div className="card h-10 mt-auto shrink-0 flex items-center overflow-hidden bg-black/60 backdrop-blur-md border-0 border-t border-white/5">
+          <div className="px-5 h-full flex items-center bg-[color:var(--rose)]/10 border-r border-white/5 text-[color:var(--rose)] text-[10px] font-bold tracking-widest z-10 gap-2">
+            <div className="w-1.5 h-1.5 bg-current rounded-full animate-pulse" />
             BREAKING
           </div>
           <div className="flex-1 relative h-full flex items-center overflow-hidden">
             <motion.div
-              className="absolute whitespace-nowrap text-sm font-mono text-cyan-50/80"
+              className="absolute whitespace-nowrap text-xs font-mono font-medium text-[color:var(--text)] opacity-80"
               animate={{ x: ["100%", "-100%"] }}
               transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
             >
@@ -199,6 +249,7 @@ export default function Page() {
             </motion.div>
           </div>
         </div>
+
       </div>
     </div>
   );

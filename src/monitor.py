@@ -1,4 +1,5 @@
 from db_manager import DBManager
+import feedparser
 
 # List of RSS feeds to monitor
 FEEDS = {
