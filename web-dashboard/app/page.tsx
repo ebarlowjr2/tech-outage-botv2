@@ -7,7 +7,7 @@ import { classifyEvent } from "@/src/lib/classifyEvent";
 import { useEventDirector } from "@/src/lib/useEventDirector";
 import { mapIncidentRow, Incident, SupabaseIncidentRow } from "@/src/lib/mappers";
 import dynamic from 'next/dynamic';
-import { Activity, AlertTriangle, CheckCircle, Globe, Server, Radio } from 'lucide-react';
+import { Globe, Server, Radio } from 'lucide-react';
 
 // Dynamic import for Map to avoid SSR issues
 const CyberMap = dynamic(() => import('./components/CyberMap'), {
@@ -17,6 +17,7 @@ const CyberMap = dynamic(() => import('./components/CyberMap'), {
 
 import SystemPresenter from "./components/SystemPresenter";
 import SubtitleBar from "./components/SubtitleBar";
+import HeaderBar from "./components/HeaderBar";
 
 function StatusBadge({ s }: { s: Incident["severity"] }) {
   const color = s === "good" ? "var(--lime)" : s === "warn" ? "var(--amber)" : "var(--rose)";
@@ -132,6 +133,21 @@ export default function Page() {
     return items.length ? items.join("  ///  ") : "ALL SYSTEMS OPERATIONAL  ///  MONITORING ACTIVE";
   }, [incidents]);
 
+  // Last updated label
+  const lastUpdatedLabel = useMemo(() => {
+    if (incidents.length > 0) {
+      const latest = new Date(incidents[0].updatedAt);
+      const now = new Date();
+      const diffMs = now.getTime() - latest.getTime();
+      const diffMins = Math.floor(diffMs / 60000);
+
+      if (diffMins < 1) return "Last updated: Just now";
+      if (diffMins < 60) return `Last updated: ${diffMins}m ago`;
+      return `Last updated: ${Math.floor(diffMins / 60)}h ago`;
+    }
+    return "Last updated: —";
+  }, [incidents]);
+
   return (
     <div className="relative min-h-screen overflow-hidden text-[color:var(--text)]">
       {/* Background handled by globals.css body */}
@@ -153,47 +169,12 @@ export default function Page() {
 
       <div className="relative mx-auto max-w-[1600px] px-6 py-8 h-screen flex flex-col gap-6">
 
-        {/* Header & KPI Row */}
-        <div className="flex items-end justify-between gap-6 shrink-0">
-          <div>
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-2 h-2 bg-[color:var(--cyan)] rounded-full animate-pulse" />
-              <div className="text-xs tracking-[0.3em] font-bold text-[color:var(--cyan)] opacity-80">LIVE • GLOBAL AVAILABILITY</div>
-            </div>
-            <h1 className="text-3xl font-bold tracking-tight text-white flex items-center gap-2">
-              TECH OUTAGE <span className="text-[color:var(--cyan)]">WATCH</span>
-            </h1>
-          </div>
-
-          <div className="flex items-center gap-4">
-            {/* Major Outages Tile */}
-            <div className="card px-5 py-3 min-w-[160px] flex items-center justify-between group hover:border-[color:var(--rose)] transition-colors">
-              <div>
-                <div className="text-[10px] tracking-widest text-[color:var(--muted)] font-bold mb-1">MAJOR OUTAGES</div>
-                <div className="text-3xl font-bold text-[color:var(--rose)]">{activeCounts.bad}</div>
-              </div>
-              <AlertTriangle className="w-6 h-6 text-[color:var(--rose)] opacity-50 group-hover:opacity-100 transition-opacity" />
-            </div>
-
-            {/* Degradation Tile */}
-            <div className="card px-5 py-3 min-w-[160px] flex items-center justify-between group hover:border-[color:var(--amber)] transition-colors">
-              <div>
-                <div className="text-[10px] tracking-widest text-[color:var(--muted)] font-bold mb-1">DEGRADED</div>
-                <div className="text-3xl font-bold text-[color:var(--amber)]">{activeCounts.warn}</div>
-              </div>
-              <Activity className="w-6 h-6 text-[color:var(--amber)] opacity-50 group-hover:opacity-100 transition-opacity" />
-            </div>
-
-            {/* Operational Tile */}
-            <div className="card px-5 py-3 min-w-[160px] flex items-center justify-between group hover:border-[color:var(--lime)] transition-colors">
-              <div>
-                <div className="text-[10px] tracking-widest text-[color:var(--muted)] font-bold mb-1">OPERATIONAL</div>
-                <div className="text-3xl font-bold text-[color:var(--lime)]">{activeCounts.ok}</div>
-              </div>
-              <CheckCircle className="w-6 h-6 text-[color:var(--lime)] opacity-50 group-hover:opacity-100 transition-opacity" />
-            </div>
-          </div>
-        </div>
+        {/* Header Bar - Responsive, no overlap */}
+        <HeaderBar
+          activeCounts={activeCounts}
+          presenterLabel={`NOC BOT • ${director.presenterState === "IDLE" ? "STANDING BY" : director.presenterState}`}
+          lastUpdatedLabel={lastUpdatedLabel}
+        />
 
         {/* Main Content Grid */}
         <div className="grid grid-cols-12 gap-6 flex-1 min-h-0">
