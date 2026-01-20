@@ -1285,3 +1285,9 @@ You tried to access op...
 2026-01-20 09:49:04,928 - INFO - HTTP Request: GET https://fnqzrbrzqylxwycrnvmt.supabase.co/rest/v1/internet_conditions?select=status&order=last_updated.desc&limit=1 "HTTP/2 200 OK"
 2026-01-20 09:49:04,932 - INFO - Context: Internet is stable
 2026-01-20 09:49:04,932 - INFO - Sleeping for 300 seconds...
+2026-01-20 09:54:04,943 - INFO - --- Starting Polling Loop ---
+2026-01-20 09:54:04,975 - INFO - Connected to Supabase.
+2026-01-20 09:54:05,848 - INFO - Processed feeds. Found 0 significant updates.
+2026-01-20 09:54:06,634 - INFO - HTTP Request: GET https://fnqzrbrzqylxwycrnvmt.supabase.co/rest/v1/internet_conditions?select=status&order=last_updated.desc&limit=1 "HTTP/2 200 OK"
+2026-01-20 09:54:06,641 - INFO - Context: Internet is stable
+2026-01-20 09:54:06,642 - INFO - Sleeping for 300 seconds...
