@@ -2,7 +2,9 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { supabase } from "@/lib/supabaseClient";
+import { createClient } from "@/src/lib/realtimeClient";
+import { classifyEvent } from "@/src/lib/classifyEvent";
+import { useEventDirector } from "@/src/lib/useEventDirector";
 import dynamic from 'next/dynamic';
 import { Activity, AlertTriangle, CheckCircle, Globe, Server, Radio } from 'lucide-react';
 
@@ -13,6 +15,7 @@ const CyberMap = dynamic(() => import('./components/CyberMap'), {
 });
 
 import SystemPresenter from "./components/SystemPresenter";
+import SubtitleBar from "./components/SubtitleBar";
 
 type Incident = {
   id: string;
@@ -36,46 +39,111 @@ function StatusBadge({ s }: { s: Incident["severity"] }) {
 }
 
 export default function Page() {
+  const supabase = useMemo(() => createClient(), []);
   const [incidents, setIncidents] = useState<Incident[]>([]);
 
-  // FETCH DATA
-  useEffect(() => {
-    fetchIncidents();
+  // Event Director - centralized choreography
+  const director = useEventDirector({
+    displayDurationMs: 8000,
+  });
 
-    const channel = supabase
+  // Initial data load
+  useEffect(() => {
+    async function fetchIncidents() {
+      const { data } = await supabase
+        .from('incidents')
+        .select(`
+          *,
+          providers ( name )
+        `)
+        .eq('active', true)
+        .order('last_update', { ascending: false });
+
+      if (data) {
+        const mapped = data.map((row: any) => ({
+          id: row.id,
+          provider: row.providers?.name || "Unknown",
+          title: row.title,
+          severity: row.severity === 'critical' ? 'bad' : row.severity === 'major' ? 'warn' : 'good',
+          status: row.status,
+          region: "GLOBAL",
+          updatedAt: row.last_update
+        }));
+        setIncidents(mapped as Incident[]);
+      }
+    }
+
+    fetchIncidents();
+  }, [supabase]);
+
+  // Centralized realtime subscriptions (SINGLE SOURCE OF TRUTH)
+  useEffect(() => {
+    // 1. Incidents channel
+    const incidentsChannel = supabase
       .channel('realtime-incidents')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'incidents' }, () => {
-        fetchIncidents();
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'incidents' }, (payload) => {
+        // Update dashboard state
+        const row = payload.new as any;
+        if (row) {
+          setIncidents((prev) => {
+            const idx = prev.findIndex((x) => x.id === row.id);
+            const mapped = {
+              id: row.id,
+              provider: row.providers?.name || "Unknown",
+              title: row.title,
+              severity: row.severity === 'critical' ? 'bad' : row.severity === 'major' ? 'warn' : 'good',
+              status: row.status,
+              region: "GLOBAL",
+              updatedAt: row.last_update
+            };
+
+            if (idx === -1) return [mapped, ...prev];
+            const next = [...prev];
+            next[idx] = mapped;
+            return next;
+          });
+        }
+
+        // Enqueue for presenter
+        const evt = classifyEvent({ table: 'incidents', payload });
+        if (evt) director.enqueue(evt);
       })
       .subscribe();
 
-    return () => { supabase.removeChannel(channel); }
-  }, []);
+    // 2. Incident events channel (captions from bot)
+    const incidentEventsChannel = supabase
+      .channel('presenter-alerts')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'incident_events' }, (payload) => {
+        const evt = classifyEvent({ table: 'incident_events', payload });
+        if (evt) director.enqueue(evt);
+      })
+      .subscribe();
 
-  async function fetchIncidents() {
-    // Join with providers table
-    const { data, error } = await supabase
-      .from('incidents')
-      .select(`
-        *,
-        providers ( name )
-      `)
-      .eq('active', true)
-      .order('last_update', { ascending: false });
+    // 3. Producer events channel (manual announcements)
+    const producerEventsChannel = supabase
+      .channel('producer-alerts')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'producer_events' }, (payload) => {
+        const evt = classifyEvent({ table: 'producer_events', payload });
+        if (evt) director.enqueue(evt);
+      })
+      .subscribe();
 
-    if (data) {
-      const mapped = data.map((row: any) => ({
-        id: row.id,
-        provider: row.providers?.name || "Unknown",
-        title: row.title,
-        severity: row.severity === 'critical' ? 'bad' : row.severity === 'major' ? 'warn' : 'good',
-        status: row.status,
-        region: "GLOBAL",
-        updatedAt: row.last_update
-      }));
-      setIncidents(mapped as Incident[]);
-    }
-  }
+    // 4. Internet conditions channel
+    const internetChannel = supabase
+      .channel('internet-conditions')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'internet_conditions' }, (payload) => {
+        const evt = classifyEvent({ table: 'internet_conditions', payload });
+        if (evt) director.enqueue(evt);
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(incidentsChannel);
+      supabase.removeChannel(incidentEventsChannel);
+      supabase.removeChannel(producerEventsChannel);
+      supabase.removeChannel(internetChannel);
+    };
+  }, [supabase, director]);
 
   const activeCounts = useMemo(() => {
     const bad = incidents.filter(i => i.severity === "bad").length;
@@ -94,8 +162,20 @@ export default function Page() {
     <div className="relative min-h-screen overflow-hidden text-[color:var(--text)]">
       {/* Background handled by globals.css body */}
 
-      {/* Presenter Overlay */}
-      <SystemPresenter />
+      {/* Presenter Overlay - now fed by Event Director */}
+      <SystemPresenter
+        presenterState={director.presenterState}
+        subtitleText={director.subtitleText}
+        captionText={director.captionText}
+        isSpeaking={director.isSpeaking}
+        lastSpokenAt={director.lastSpokenAt}
+      />
+
+      {/* Subtitle Bar (TV-style bottom overlay) */}
+      <SubtitleBar
+        text={director.captionText}
+        isSpeaking={director.isSpeaking}
+      />
 
       <div className="relative mx-auto max-w-[1600px] px-6 py-8 h-screen flex flex-col gap-6">
 
