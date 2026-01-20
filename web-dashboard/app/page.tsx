@@ -167,112 +167,117 @@ export default function Page() {
         isSpeaking={director.isSpeaking}
       />
 
-      <div className="relative mx-auto max-w-[1600px] px-6 py-8 h-screen flex flex-col gap-6">
+      {/* AppFrame: Fixed layout contract */}
+      <div className="relative mx-auto max-w-[1600px] px-6 py-8 h-screen flex flex-col">
 
-        {/* Header Bar - Responsive, no overlap */}
-        <HeaderBar
-          activeCounts={activeCounts}
-          presenterLabel={`NOC BOT • ${director.presenterState === "IDLE" ? "STANDING BY" : director.presenterState}`}
-          lastUpdatedLabel={lastUpdatedLabel}
-        />
+        {/* HeaderBar: Fixed height (140px min), no overlap */}
+        <div className="shrink-0" style={{ minHeight: '140px' }}>
+          <HeaderBar
+            activeCounts={activeCounts}
+            presenterLabel={`NOC BOT • ${director.presenterState === "IDLE" ? "STANDING BY" : director.presenterState}`}
+            lastUpdatedLabel={lastUpdatedLabel}
+          />
+        </div>
 
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-12 gap-6 flex-1 min-h-0">
+        {/* MainContent: Starts BELOW header with padding */}
+        <div className="flex-1 min-h-0 pt-4">
+          <div className="grid grid-cols-12 gap-6 h-full">
 
-          {/* Map Panel */}
-          <div className="col-span-12 lg:col-span-8 card card-accent relative flex flex-col p-1 overflow-hidden group">
-            {/* Map Overlay Header (label only; timestamps live in HeaderBar) */}
-            <div className="absolute top-5 left-5 z-[400] flex items-center gap-3">
-              <div className="bg-black/60 backdrop-blur px-3 py-1.5 rounded-full border border-white/10 flex items-center gap-2">
-                <Globe className="w-3.5 h-3.5 text-[color:var(--cyan)]" />
-                <span className="text-xs font-bold tracking-widest text-white/90">LIVE MAP</span>
-              </div>
-
-              {/* Optional: lightweight mode chip (no time) */}
-              <div className="bg-black/40 backdrop-blur px-2.5 py-1 rounded-full border border-white/10">
-                <span className="text-[11px] tracking-[0.22em] text-white/60 uppercase font-bold">
-                  Service Health
-                </span>
-              </div>
-            </div>
-
-            {/* Map Component */}
-            <div className="flex-1 rounded-xl overflow-hidden bg-[#05070d] relative">
-              <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.03] pointer-events-none mix-blend-overlay" />
-              <CyberMap incidents={incidents} />
-            </div>
-          </div>
-
-          {/* Right Column: Feed */}
-          <div className="col-span-12 lg:col-span-4 flex flex-col gap-6 overflow-hidden">
-
-            {/* Feed Card */}
-            <div className="card card-accent flex-1 flex flex-col min-h-0">
-              <div className="p-4 border-b border-white/5 flex items-center justify-between">
-                <div className="text-xs tracking-[0.2em] font-bold text-[color:var(--muted)] flex items-center gap-2">
-                  <Radio className="w-3 h-3" />
-                  LIVE FEED
+            {/* Map Panel */}
+            <div className="col-span-12 lg:col-span-8 card card-accent relative flex flex-col p-1 overflow-hidden group">
+              {/* Map Overlay Header (label only; timestamps live in HeaderBar) */}
+              <div className="absolute top-5 left-5 z-[400] flex items-center gap-3">
+                <div className="bg-black/60 backdrop-blur px-3 py-1.5 rounded-full border border-white/10 flex items-center gap-2">
+                  <Globe className="w-3.5 h-3.5 text-[color:var(--cyan)]" />
+                  <span className="text-xs font-bold tracking-widest text-white/90">LIVE MAP</span>
                 </div>
-                <span className="text-[10px] bg-white/5 px-2 py-0.5 rounded text-white/40">{incidents.length} Events</span>
+
+                {/* Optional: lightweight mode chip (no time) */}
+                <div className="bg-black/40 backdrop-blur px-2.5 py-1 rounded-full border border-white/10">
+                  <span className="text-[11px] tracking-[0.22em] text-white/60 uppercase font-bold">
+                    Service Health
+                  </span>
+                </div>
               </div>
 
-              <div className="p-3 space-y-3 overflow-y-auto flex-1 custom-scrollbar">
-                {incidents.length === 0 && (
-                  <div className="h-full flex flex-col items-center justify-center text-[color:var(--muted)] opacity-50 gap-3">
-                    <Server className="w-8 h-8 opacity-20" />
-                    <span className="text-xs tracking-widest">NO ACTIVE OUTAGES</span>
-                  </div>
-                )}
+              {/* Map Component */}
+              <div className="flex-1 rounded-xl overflow-hidden bg-[#05070d] relative">
+                <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.03] pointer-events-none mix-blend-overlay" />
+                <CyberMap incidents={incidents} />
+              </div>
+            </div>
 
-                {incidents.map(i => (
-                  <div key={i.id} className="p-3 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.06] hover:border-white/10 transition-all group cursor-default">
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex items-center gap-3">
-                        {/* Provider Logo Mark */}
-                        <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-xs font-bold text-white/80">
-                          {i.provider.substring(0, 2).toUpperCase()}
+            {/* Right Column: Feed */}
+            <div className="col-span-12 lg:col-span-4 flex flex-col gap-6 overflow-hidden">
+
+              {/* Feed Card */}
+              <div className="card card-accent flex-1 flex flex-col min-h-0">
+                <div className="p-4 border-b border-white/5 flex items-center justify-between">
+                  <div className="text-xs tracking-[0.2em] font-bold text-[color:var(--muted)] flex items-center gap-2">
+                    <Radio className="w-3 h-3" />
+                    LIVE FEED
+                  </div>
+                  <span className="text-[10px] bg-white/5 px-2 py-0.5 rounded text-white/40">{incidents.length} Events</span>
+                </div>
+
+                <div className="p-3 space-y-3 overflow-y-auto flex-1 custom-scrollbar">
+                  {incidents.length === 0 && (
+                    <div className="h-full flex flex-col items-center justify-center text-[color:var(--muted)] opacity-50 gap-3">
+                      <Server className="w-8 h-8 opacity-20" />
+                      <span className="text-xs tracking-widest">NO ACTIVE OUTAGES</span>
+                    </div>
+                  )}
+
+                  {incidents.map(i => (
+                    <div key={i.id} className="p-3 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.06] hover:border-white/10 transition-all group cursor-default">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex items-center gap-3">
+                          {/* Provider Logo Mark */}
+                          <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-xs font-bold text-white/80">
+                            {i.provider.substring(0, 2).toUpperCase()}
+                          </div>
+                          <div>
+                            <div className="text-sm font-bold text-white/90 group-hover:text-[color:var(--cyan)] transition-colors">{i.provider}</div>
+                            <div className="text-[10px] font-mono text-white/40">#{i.id.slice(0, 4)}</div>
+                          </div>
                         </div>
-                        <div>
-                          <div className="text-sm font-bold text-white/90 group-hover:text-[color:var(--cyan)] transition-colors">{i.provider}</div>
-                          <div className="text-[10px] font-mono text-white/40">#{i.id.slice(0, 4)}</div>
-                        </div>
+                        <StatusBadge s={i.severity} />
                       </div>
-                      <StatusBadge s={i.severity} />
+                      <div className="mt-2 text-xs text-[color:var(--muted)] leading-relaxed pl-[44px]">
+                        {i.title}
+                      </div>
                     </div>
-                    <div className="mt-2 text-xs text-[color:var(--muted)] leading-relaxed pl-[44px]">
-                      {i.title}
-                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* System Status / Signature Element */}
+              <div className="card p-4 shrink-0">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="text-[10px] tracking-widest text-[color:var(--muted)] font-bold">SYSTEM INTEGRITY</div>
+                  <div className="w-1.5 h-1.5 rounded-full bg-[color:var(--lime)] shadow-[0_0_8px_var(--lime)]" />
+                </div>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-xs font-mono text-white/40">
+                    <span>DATA_INGEST</span>
+                    <span className="text-[color:var(--lime)]">OPTIMAL</span>
                   </div>
-                ))}
+                  <div className="flex justify-between text-xs font-mono text-white/40">
+                    <span>NEURAL_VOICE</span>
+                    <span className="text-[color:var(--cyan)]">READY</span>
+                  </div>
+                  {/* Fake Signal Bar */}
+                  <div className="h-1 bg-white/10 rounded-full mt-2 overflow-hidden flex gap-0.5">
+                    <div className="flex-1 bg-[color:var(--cyan)] opacity-20" />
+                    <div className="flex-1 bg-[color:var(--cyan)] opacity-40" />
+                    <div className="flex-1 bg-[color:var(--cyan)] opacity-60" />
+                    <div className="flex-1 bg-[color:var(--cyan)] opacity-80" />
+                    <div className="flex-1 bg-[color:var(--cyan)]" />
+                  </div>
+                </div>
               </div>
-            </div>
 
-            {/* System Status / Signature Element */}
-            <div className="card p-4 shrink-0">
-              <div className="flex items-center justify-between mb-3">
-                <div className="text-[10px] tracking-widest text-[color:var(--muted)] font-bold">SYSTEM INTEGRITY</div>
-                <div className="w-1.5 h-1.5 rounded-full bg-[color:var(--lime)] shadow-[0_0_8px_var(--lime)]" />
-              </div>
-              <div className="space-y-2">
-                <div className="flex justify-between text-xs font-mono text-white/40">
-                  <span>DATA_INGEST</span>
-                  <span className="text-[color:var(--lime)]">OPTIMAL</span>
-                </div>
-                <div className="flex justify-between text-xs font-mono text-white/40">
-                  <span>NEURAL_VOICE</span>
-                  <span className="text-[color:var(--cyan)]">READY</span>
-                </div>
-                {/* Fake Signal Bar */}
-                <div className="h-1 bg-white/10 rounded-full mt-2 overflow-hidden flex gap-0.5">
-                  <div className="flex-1 bg-[color:var(--cyan)] opacity-20" />
-                  <div className="flex-1 bg-[color:var(--cyan)] opacity-40" />
-                  <div className="flex-1 bg-[color:var(--cyan)] opacity-60" />
-                  <div className="flex-1 bg-[color:var(--cyan)] opacity-80" />
-                  <div className="flex-1 bg-[color:var(--cyan)]" />
-                </div>
-              </div>
             </div>
-
           </div>
         </div>
 

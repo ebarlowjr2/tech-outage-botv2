@@ -1333,3 +1333,231 @@ You tried to access op...
 2026-01-20 10:29:16,724 - INFO - HTTP Request: GET https://fnqzrbrzqylxwycrnvmt.supabase.co/rest/v1/internet_conditions?select=status&order=last_updated.desc&limit=1 "HTTP/2 200 OK"
 2026-01-20 10:29:16,726 - INFO - Context: Internet is stable
 2026-01-20 10:29:16,726 - INFO - Sleeping for 300 seconds...
+2026-01-20 10:34:16,779 - INFO - --- Starting Polling Loop ---
+2026-01-20 10:34:16,823 - INFO - Connected to Supabase.
+2026-01-20 10:34:17,678 - INFO - Processed feeds. Found 0 significant updates.
+2026-01-20 10:34:18,033 - INFO - HTTP Request: GET https://fnqzrbrzqylxwycrnvmt.supabase.co/rest/v1/internet_conditions?select=status&order=last_updated.desc&limit=1 "HTTP/2 200 OK"
+2026-01-20 10:34:18,034 - INFO - Context: Internet is stable
+2026-01-20 10:34:18,034 - INFO - Sleeping for 300 seconds...
+2026-01-20 10:39:18,039 - INFO - --- Starting Polling Loop ---
+2026-01-20 10:39:18,076 - INFO - Connected to Supabase.
+2026-01-20 10:39:20,089 - INFO - Processed feeds. Found 0 significant updates.
+2026-01-20 10:39:21,148 - INFO - HTTP Request: GET https://fnqzrbrzqylxwycrnvmt.supabase.co/rest/v1/internet_conditions?select=status&order=last_updated.desc&limit=1 "HTTP/2 200 OK"
+2026-01-20 10:39:21,152 - INFO - Context: Internet is stable
+2026-01-20 10:39:21,153 - INFO - Sleeping for 300 seconds...
+2026-01-20 11:14:59,311 - INFO - --- Starting Polling Loop ---
+2026-01-20 11:14:59,394 - INFO - Connected to Supabase.
+2026-01-20 11:15:00,322 - INFO - Processed feeds. Found 0 significant updates.
+2026-01-20 11:15:01,411 - INFO - HTTP Request: GET https://fnqzrbrzqylxwycrnvmt.supabase.co/rest/v1/internet_conditions?select=status&order=last_updated.desc&limit=1 "HTTP/2 200 OK"
+2026-01-20 11:15:01,423 - INFO - Context: Internet is stable
+2026-01-20 11:15:01,423 - INFO - Sleeping for 300 seconds...
+2026-01-20 11:20:01,458 - INFO - --- Starting Polling Loop ---
+2026-01-20 11:20:01,518 - INFO - Connected to Supabase.
+2026-01-20 11:22:01,555 - INFO - Processed feeds. Found 0 significant updates.
+2026-01-20 11:22:31,571 - ERROR - Error fetching internet condition: [Errno 8] nodename nor servname provided, or not known
+2026-01-20 11:22:31,572 - INFO - Context: Internet is stable
+2026-01-20 11:22:31,572 - INFO - Sleeping for 300 seconds...
+2026-01-20 11:27:31,576 - INFO - --- Starting Polling Loop ---
+2026-01-20 11:27:31,593 - INFO - Connected to Supabase.
+2026-01-20 11:29:31,647 - INFO - Processed feeds. Found 0 significant updates.
+2026-01-20 11:30:01,658 - ERROR - Error fetching internet condition: [Errno 8] nodename nor servname provided, or not known
+2026-01-20 11:30:01,659 - INFO - Context: Internet is stable
+2026-01-20 11:30:01,660 - INFO - Sleeping for 300 seconds...
+2026-01-20 11:35:01,662 - INFO - --- Starting Polling Loop ---
+2026-01-20 11:35:01,676 - INFO - Connected to Supabase.
+2026-01-20 11:37:01,711 - INFO - Processed feeds. Found 0 significant updates.
+2026-01-20 11:37:31,728 - ERROR - Error fetching internet condition: [Errno 8] nodename nor servname provided, or not known
+2026-01-20 11:37:31,731 - INFO - Context: Internet is stable
+2026-01-20 11:37:31,731 - INFO - Sleeping for 300 seconds...
+2026-01-20 11:42:31,736 - INFO - --- Starting Polling Loop ---
+2026-01-20 11:42:31,763 - INFO - Connected to Supabase.
+2026-01-20 11:44:31,801 - INFO - Processed feeds. Found 0 significant updates.
+2026-01-20 11:45:01,825 - ERROR - Error fetching internet condition: [Errno 8] nodename nor servname provided, or not known
+2026-01-20 11:45:01,828 - INFO - Context: Internet is stable
+2026-01-20 11:45:01,828 - INFO - Sleeping for 300 seconds...
+2026-01-20 11:50:01,834 - INFO - --- Starting Polling Loop ---
+2026-01-20 11:50:01,894 - INFO - Connected to Supabase.
+2026-01-20 11:52:01,932 - INFO - Processed feeds. Found 0 significant updates.
+2026-01-20 11:52:31,961 - ERROR - Error fetching internet condition: [Errno 8] nodename nor servname provided, or not known
+2026-01-20 11:52:31,968 - INFO - Context: Internet is stable
+2026-01-20 11:52:31,969 - INFO - Sleeping for 300 seconds...
+2026-01-20 11:57:31,978 - INFO - --- Starting Polling Loop ---
+2026-01-20 11:57:32,003 - INFO - Connected to Supabase.
+2026-01-20 11:59:32,050 - INFO - Processed feeds. Found 0 significant updates.
+2026-01-20 12:00:02,064 - ERROR - Error fetching internet condition: [Errno 8] nodename nor servname provided, or not known
+2026-01-20 12:00:02,067 - INFO - Context: Internet is stable
+2026-01-20 12:00:02,068 - INFO - Sleeping for 300 seconds...
+2026-01-20 12:05:02,071 - INFO - --- Starting Polling Loop ---
+2026-01-20 12:05:02,121 - INFO - Connected to Supabase.
+2026-01-20 12:07:02,179 - INFO - Processed feeds. Found 0 significant updates.
+2026-01-20 12:07:32,196 - ERROR - Error fetching internet condition: [Errno 8] nodename nor servname provided, or not known
+2026-01-20 12:07:32,198 - INFO - Context: Internet is stable
+2026-01-20 12:07:32,198 - INFO - Sleeping for 300 seconds...
+2026-01-20 12:12:32,206 - INFO - --- Starting Polling Loop ---
+2026-01-20 12:12:32,233 - INFO - Connected to Supabase.
+2026-01-20 12:14:32,285 - INFO - Processed feeds. Found 0 significant updates.
+2026-01-20 12:15:02,309 - ERROR - Error fetching internet condition: [Errno 8] nodename nor servname provided, or not known
+2026-01-20 12:15:02,313 - INFO - Context: Internet is stable
+2026-01-20 12:15:02,313 - INFO - Sleeping for 300 seconds...
+2026-01-20 12:20:02,319 - INFO - --- Starting Polling Loop ---
+2026-01-20 12:20:02,351 - INFO - Connected to Supabase.
+2026-01-20 12:22:02,393 - INFO - Processed feeds. Found 0 significant updates.
+2026-01-20 12:22:32,410 - ERROR - Error fetching internet condition: [Errno 8] nodename nor servname provided, or not known
+2026-01-20 12:22:32,412 - INFO - Context: Internet is stable
+2026-01-20 12:22:32,413 - INFO - Sleeping for 300 seconds...
+2026-01-20 12:27:32,413 - INFO - --- Starting Polling Loop ---
+2026-01-20 12:27:32,440 - INFO - Connected to Supabase.
+2026-01-20 12:29:32,507 - INFO - Processed feeds. Found 0 significant updates.
+2026-01-20 12:30:02,524 - ERROR - Error fetching internet condition: [Errno 8] nodename nor servname provided, or not known
+2026-01-20 12:30:02,527 - INFO - Context: Internet is stable
+2026-01-20 12:30:02,527 - INFO - Sleeping for 300 seconds...
+2026-01-20 12:35:02,529 - INFO - --- Starting Polling Loop ---
+2026-01-20 12:35:02,553 - INFO - Connected to Supabase.
+2026-01-20 12:37:02,596 - INFO - Processed feeds. Found 0 significant updates.
+2026-01-20 12:37:32,666 - ERROR - Error fetching internet condition: [Errno 8] nodename nor servname provided, or not known
+2026-01-20 12:37:32,666 - INFO - Context: Internet is stable
+2026-01-20 12:37:32,666 - INFO - Sleeping for 300 seconds...
+2026-01-20 12:42:32,676 - INFO - --- Starting Polling Loop ---
+2026-01-20 12:42:32,703 - INFO - Connected to Supabase.
+2026-01-20 12:44:32,744 - INFO - Processed feeds. Found 0 significant updates.
+2026-01-20 12:45:02,759 - ERROR - Error fetching internet condition: [Errno 8] nodename nor servname provided, or not known
+2026-01-20 12:45:02,761 - INFO - Context: Internet is stable
+2026-01-20 12:45:02,762 - INFO - Sleeping for 300 seconds...
+2026-01-20 12:50:02,782 - INFO - --- Starting Polling Loop ---
+2026-01-20 12:50:02,822 - INFO - Connected to Supabase.
+2026-01-20 12:52:02,908 - INFO - Processed feeds. Found 0 significant updates.
+2026-01-20 12:52:32,923 - ERROR - Error fetching internet condition: [Errno 8] nodename nor servname provided, or not known
+2026-01-20 12:52:32,926 - INFO - Context: Internet is stable
+2026-01-20 12:52:32,926 - INFO - Sleeping for 300 seconds...
+2026-01-20 12:57:32,935 - INFO - --- Starting Polling Loop ---
+2026-01-20 12:57:32,969 - INFO - Connected to Supabase.
+2026-01-20 12:59:33,021 - INFO - Processed feeds. Found 0 significant updates.
+2026-01-20 13:00:03,064 - ERROR - Error fetching internet condition: [Errno 8] nodename nor servname provided, or not known
+2026-01-20 13:00:03,069 - INFO - Context: Internet is stable
+2026-01-20 13:00:03,069 - INFO - Sleeping for 300 seconds...
+2026-01-20 13:05:03,069 - INFO - --- Starting Polling Loop ---
+2026-01-20 13:05:03,089 - INFO - Connected to Supabase.
+2026-01-20 13:07:03,130 - INFO - Processed feeds. Found 0 significant updates.
+2026-01-20 13:07:33,146 - ERROR - Error fetching internet condition: [Errno 8] nodename nor servname provided, or not known
+2026-01-20 13:07:33,150 - INFO - Context: Internet is stable
+2026-01-20 13:07:33,150 - INFO - Sleeping for 300 seconds...
+2026-01-20 13:12:33,156 - INFO - --- Starting Polling Loop ---
+2026-01-20 13:12:33,180 - INFO - Connected to Supabase.
+2026-01-20 13:14:00,765 - INFO - Processed feeds. Found 0 significant updates.
+2026-01-20 13:14:02,918 - INFO - HTTP Request: GET https://fnqzrbrzqylxwycrnvmt.supabase.co/rest/v1/internet_conditions?select=status&order=last_updated.desc&limit=1 "HTTP/2 200 OK"
+2026-01-20 13:14:02,930 - INFO - Context: Internet is stable
+2026-01-20 13:14:02,931 - INFO - Sleeping for 300 seconds...
+2026-01-20 13:19:02,925 - INFO - --- Starting Polling Loop ---
+2026-01-20 13:19:02,959 - INFO - Connected to Supabase.
+2026-01-20 13:28:03,034 - INFO - Processed feeds. Found 0 significant updates.
+2026-01-20 13:28:33,056 - ERROR - Error fetching internet condition: [Errno 8] nodename nor servname provided, or not known
+2026-01-20 13:28:33,058 - INFO - Context: Internet is stable
+2026-01-20 13:28:33,059 - INFO - Sleeping for 300 seconds...
+2026-01-20 13:33:33,062 - INFO - --- Starting Polling Loop ---
+2026-01-20 13:33:33,087 - INFO - Connected to Supabase.
+2026-01-20 13:35:33,118 - INFO - Processed feeds. Found 0 significant updates.
+2026-01-20 13:36:03,137 - ERROR - Error fetching internet condition: [Errno 8] nodename nor servname provided, or not known
+2026-01-20 13:36:03,138 - INFO - Context: Internet is stable
+2026-01-20 13:36:03,139 - INFO - Sleeping for 300 seconds...
+2026-01-20 13:41:03,138 - INFO - --- Starting Polling Loop ---
+2026-01-20 13:41:03,163 - INFO - Connected to Supabase.
+2026-01-20 13:43:03,210 - INFO - Processed feeds. Found 0 significant updates.
+2026-01-20 13:43:33,229 - ERROR - Error fetching internet condition: [Errno 8] nodename nor servname provided, or not known
+2026-01-20 13:43:33,232 - INFO - Context: Internet is stable
+2026-01-20 13:43:33,233 - INFO - Sleeping for 300 seconds...
+2026-01-20 13:48:33,232 - INFO - --- Starting Polling Loop ---
+2026-01-20 13:48:33,250 - INFO - Connected to Supabase.
+2026-01-20 13:50:33,297 - INFO - Processed feeds. Found 0 significant updates.
+2026-01-20 13:51:03,315 - ERROR - Error fetching internet condition: [Errno 8] nodename nor servname provided, or not known
+2026-01-20 13:51:03,317 - INFO - Context: Internet is stable
+2026-01-20 13:51:03,318 - INFO - Sleeping for 300 seconds...
+2026-01-20 13:56:03,321 - INFO - --- Starting Polling Loop ---
+2026-01-20 13:56:03,345 - INFO - Connected to Supabase.
+2026-01-20 13:58:03,408 - INFO - Processed feeds. Found 0 significant updates.
+2026-01-20 13:58:33,427 - ERROR - Error fetching internet condition: [Errno 8] nodename nor servname provided, or not known
+2026-01-20 13:58:33,430 - INFO - Context: Internet is stable
+2026-01-20 13:58:33,435 - INFO - Sleeping for 300 seconds...
+2026-01-20 14:03:33,445 - INFO - --- Starting Polling Loop ---
+2026-01-20 14:03:33,469 - INFO - Connected to Supabase.
+2026-01-20 14:05:33,514 - INFO - Processed feeds. Found 0 significant updates.
+2026-01-20 14:06:03,532 - ERROR - Error fetching internet condition: [Errno 8] nodename nor servname provided, or not known
+2026-01-20 14:06:03,535 - INFO - Context: Internet is stable
+2026-01-20 14:06:03,535 - INFO - Sleeping for 300 seconds...
+2026-01-20 14:11:03,536 - INFO - --- Starting Polling Loop ---
+2026-01-20 14:11:03,573 - INFO - Connected to Supabase.
+2026-01-20 14:13:03,616 - INFO - Processed feeds. Found 0 significant updates.
+2026-01-20 14:13:33,633 - ERROR - Error fetching internet condition: [Errno 8] nodename nor servname provided, or not known
+2026-01-20 14:13:33,634 - INFO - Context: Internet is stable
+2026-01-20 14:13:33,635 - INFO - Sleeping for 300 seconds...
+2026-01-20 14:18:33,635 - INFO - --- Starting Polling Loop ---
+2026-01-20 14:18:33,661 - INFO - Connected to Supabase.
+2026-01-20 14:20:33,708 - INFO - Processed feeds. Found 0 significant updates.
+2026-01-20 14:21:03,724 - ERROR - Error fetching internet condition: [Errno 8] nodename nor servname provided, or not known
+2026-01-20 14:21:03,728 - INFO - Context: Internet is stable
+2026-01-20 14:21:03,728 - INFO - Sleeping for 300 seconds...
+2026-01-20 14:26:03,737 - INFO - --- Starting Polling Loop ---
+2026-01-20 14:26:03,766 - INFO - Connected to Supabase.
+2026-01-20 14:28:03,811 - INFO - Processed feeds. Found 0 significant updates.
+2026-01-20 14:28:33,834 - ERROR - Error fetching internet condition: [Errno 8] nodename nor servname provided, or not known
+2026-01-20 14:28:33,836 - INFO - Context: Internet is stable
+2026-01-20 14:28:33,836 - INFO - Sleeping for 300 seconds...
+2026-01-20 14:33:33,836 - INFO - --- Starting Polling Loop ---
+2026-01-20 14:33:33,860 - INFO - Connected to Supabase.
+2026-01-20 14:35:33,895 - INFO - Processed feeds. Found 0 significant updates.
+2026-01-20 14:36:03,914 - ERROR - Error fetching internet condition: [Errno 8] nodename nor servname provided, or not known
+2026-01-20 14:36:03,917 - INFO - Context: Internet is stable
+2026-01-20 14:36:03,917 - INFO - Sleeping for 300 seconds...
+2026-01-20 14:41:03,916 - INFO - --- Starting Polling Loop ---
+2026-01-20 14:41:03,944 - INFO - Connected to Supabase.
+2026-01-20 14:43:03,996 - INFO - Processed feeds. Found 0 significant updates.
+2026-01-20 14:43:34,010 - ERROR - Error fetching internet condition: [Errno 8] nodename nor servname provided, or not known
+2026-01-20 14:43:34,013 - INFO - Context: Internet is stable
+2026-01-20 14:43:34,013 - INFO - Sleeping for 300 seconds...
+2026-01-20 14:48:34,012 - INFO - --- Starting Polling Loop ---
+2026-01-20 14:48:34,036 - INFO - Connected to Supabase.
+2026-01-20 14:50:34,081 - INFO - Processed feeds. Found 0 significant updates.
+2026-01-20 14:51:04,101 - ERROR - Error fetching internet condition: [Errno 8] nodename nor servname provided, or not known
+2026-01-20 14:51:04,104 - INFO - Context: Internet is stable
+2026-01-20 14:51:04,104 - INFO - Sleeping for 300 seconds...
+2026-01-20 14:56:04,114 - INFO - --- Starting Polling Loop ---
+2026-01-20 14:56:04,134 - INFO - Connected to Supabase.
+2026-01-20 14:58:04,179 - INFO - Processed feeds. Found 0 significant updates.
+2026-01-20 14:58:34,197 - ERROR - Error fetching internet condition: [Errno 8] nodename nor servname provided, or not known
+2026-01-20 14:58:34,199 - INFO - Context: Internet is stable
+2026-01-20 14:58:34,200 - INFO - Sleeping for 300 seconds...
+2026-01-20 15:03:34,200 - INFO - --- Starting Polling Loop ---
+2026-01-20 15:03:34,227 - INFO - Connected to Supabase.
+2026-01-20 15:05:34,259 - INFO - Processed feeds. Found 0 significant updates.
+2026-01-20 15:06:04,278 - ERROR - Error fetching internet condition: [Errno 8] nodename nor servname provided, or not known
+2026-01-20 15:06:04,281 - INFO - Context: Internet is stable
+2026-01-20 15:06:04,282 - INFO - Sleeping for 300 seconds...
+2026-01-20 15:11:04,285 - INFO - --- Starting Polling Loop ---
+2026-01-20 15:11:04,310 - INFO - Connected to Supabase.
+2026-01-20 15:13:04,360 - INFO - Processed feeds. Found 0 significant updates.
+2026-01-20 15:13:34,378 - ERROR - Error fetching internet condition: [Errno 8] nodename nor servname provided, or not known
+2026-01-20 15:13:34,381 - INFO - Context: Internet is stable
+2026-01-20 15:13:34,382 - INFO - Sleeping for 300 seconds...
+2026-01-20 15:18:34,387 - INFO - --- Starting Polling Loop ---
+2026-01-20 15:18:34,428 - INFO - Connected to Supabase.
+2026-01-20 15:20:34,481 - INFO - Processed feeds. Found 0 significant updates.
+2026-01-20 15:21:04,531 - ERROR - Error fetching internet condition: [Errno 8] nodename nor servname provided, or not known
+2026-01-20 15:21:04,534 - INFO - Context: Internet is stable
+2026-01-20 15:21:04,534 - INFO - Sleeping for 300 seconds...
+2026-01-20 15:26:04,536 - INFO - --- Starting Polling Loop ---
+2026-01-20 15:26:04,583 - INFO - Connected to Supabase.
+2026-01-20 15:26:05,799 - INFO - Processed feeds. Found 0 significant updates.
+2026-01-20 15:26:06,689 - INFO - HTTP Request: GET https://fnqzrbrzqylxwycrnvmt.supabase.co/rest/v1/internet_conditions?select=status&order=last_updated.desc&limit=1 "HTTP/2 200 OK"
+2026-01-20 15:26:06,702 - INFO - Context: Internet is stable
+2026-01-20 15:26:06,702 - INFO - Sleeping for 300 seconds...
+2026-01-20 15:31:06,711 - INFO - --- Starting Polling Loop ---
+2026-01-20 15:31:06,750 - INFO - Connected to Supabase.
+2026-01-20 15:31:07,444 - INFO - Processed feeds. Found 0 significant updates.
+2026-01-20 15:31:08,148 - INFO - HTTP Request: GET https://fnqzrbrzqylxwycrnvmt.supabase.co/rest/v1/internet_conditions?select=status&order=last_updated.desc&limit=1 "HTTP/2 200 OK"
+2026-01-20 15:31:08,161 - INFO - Context: Internet is stable
+2026-01-20 15:31:08,162 - INFO - Sleeping for 300 seconds...
+2026-01-20 15:36:08,346 - INFO - --- Starting Polling Loop ---
+2026-01-20 15:36:08,636 - INFO - Connected to Supabase.
+2026-01-20 15:36:09,397 - INFO - Processed feeds. Found 0 significant updates.
+2026-01-20 15:36:10,103 - INFO - HTTP Request: GET https://fnqzrbrzqylxwycrnvmt.supabase.co/rest/v1/internet_conditions?select=status&order=last_updated.desc&limit=1 "HTTP/2 200 OK"
+2026-01-20 15:36:10,107 - INFO - Context: Internet is stable
+2026-01-20 15:36:10,107 - INFO - Sleeping for 300 seconds...
