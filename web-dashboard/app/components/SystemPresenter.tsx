@@ -8,14 +8,28 @@ export default function SystemPresenter() {
     const [activeAlert, setActiveAlert] = useState<string | null>(null)
 
     useEffect(() => {
-        const channel = supabase
+        // Incident Events Channel
+        const incidentChannel = supabase
             .channel('presenter-alerts')
             .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'incident_events' }, (payload) => {
                 triggerAlert(payload.new.description)
             })
             .subscribe()
 
-        return () => { supabase.removeChannel(channel) }
+        // Producer/Manual Events Channel
+        const producerChannel = supabase
+            .channel('producer-alerts')
+            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'producer_events' }, (payload) => {
+                if (payload.new.type === 'ANNOUNCE' && payload.new.payload?.message) {
+                    triggerAlert(payload.new.payload.message)
+                }
+            })
+            .subscribe()
+
+        return () => {
+            supabase.removeChannel(incidentChannel)
+            supabase.removeChannel(producerChannel)
+        }
     }, [])
 
     function triggerAlert(text: string) {
@@ -45,8 +59,8 @@ export default function SystemPresenter() {
                 <div className="relative w-12 h-12 flex items-center justify-center">
                     {/* Gradient Orb */}
                     <div className={`absolute inset-0 rounded-full blur-md opacity-60 transition-all duration-1000 ${activeAlert
-                            ? "bg-gradient-to-r from-[color:var(--amber)] to-[color:var(--rose)] animate-pulse"
-                            : "bg-gradient-to-r from-[color:var(--cyan)] to-[color:var(--violet)]"
+                        ? "bg-gradient-to-r from-[color:var(--amber)] to-[color:var(--rose)] animate-pulse"
+                        : "bg-gradient-to-r from-[color:var(--cyan)] to-[color:var(--violet)]"
                         }`} />
 
                     {/* Inner Core */}
