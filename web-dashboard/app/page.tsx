@@ -23,6 +23,7 @@ const CyberMap = dynamic(() => import('./components/CyberMap'), {
 
 import SubtitleBar from "./components/SubtitleBar";
 import HeaderBar from "./components/HeaderBar";
+import SystemPresenter from "./components/SystemPresenter";
 
 // Status Badge using design system chip classes
 function StatusBadge({ s }: { s: Incident["severity"] }) {
@@ -188,8 +189,8 @@ export default function Page() {
         isSpeaking={director.isSpeaking}
       />
 
-      {/* AppFrame: Fixed layout contract */}
-      <div className="relative mx-auto max-w-[1600px] px-6 py-6 h-screen flex flex-col">
+      {/* AppFrame: Fixed layout contract - use dvh for dynamic viewport height */}
+      <div className="relative mx-auto max-w-[1600px] px-6 py-4 h-[100dvh] flex flex-col">
 
         {/* HeaderBar: Fixed height (140px min), no overlap */}
         <div className="shrink-0" style={{ minHeight: '140px' }}>
@@ -228,8 +229,17 @@ export default function Page() {
               </div>
             </div>
 
-            {/* Right Column: Feed */}
-            <div className="col-span-12 lg:col-span-4 flex flex-col gap-6 overflow-hidden">
+            {/* Right Column: Presenter + Feed */}
+            <div className="col-span-12 lg:col-span-4 flex flex-col gap-4 overflow-hidden">
+
+              {/* System Presenter - NOC BOT status */}
+              <SystemPresenter
+                presenterState={director.presenterState}
+                subtitleText={director.subtitleText}
+                captionText={director.captionText}
+                isSpeaking={director.isSpeaking}
+                lastSpokenAt={director.lastSpokenAt}
+              />
 
               {/* Feed Card */}
               <div className="card card-accent flex-1 flex flex-col min-h-0">
