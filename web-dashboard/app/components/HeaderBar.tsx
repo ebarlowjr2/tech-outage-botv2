@@ -84,7 +84,7 @@ export default function HeaderBar({
                 <div className="col-span-12 lg:col-span-6">
                     <div className="flex flex-wrap items-center justify-start lg:justify-end gap-2 sm:gap-3">
                         {/* Major Outages Tile */}
-                        <div className="card px-3 sm:px-4 py-2 sm:py-3 min-w-[100px] sm:min-w-[130px] flex flex-col gap-1.5 sm:gap-2 group hover:-translate-y-0.5 hover:shadow-2xl transition-all cursor-default">
+                        <div className="card kpi-tile kpi-tile-rose px-3 sm:px-4 py-2 sm:py-3 min-w-[100px] sm:min-w-[130px] flex flex-col gap-1.5 sm:gap-2 group hover:-translate-y-0.5 hover:shadow-2xl transition-all cursor-default">
                             <div className="flex items-center justify-between gap-2">
                                 <div>
                                     <div className="text-[9px] sm:text-[10px] tracking-widest text-[color:var(--muted)] font-bold mb-0.5 sm:mb-1">
@@ -96,11 +96,10 @@ export default function HeaderBar({
                                 </div>
                                 <AlertTriangle className="w-5 h-5 sm:w-6 sm:h-6 text-[color:var(--rose)] opacity-50 group-hover:opacity-100 transition-opacity shrink-0" />
                             </div>
-                            <div className="h-0.5 bg-gradient-to-r from-rose-500/30 to-rose-500/10 rounded-full" />
                         </div>
 
                         {/* Degradation Tile */}
-                        <div className="card px-3 sm:px-4 py-2 sm:py-3 min-w-[100px] sm:min-w-[130px] flex flex-col gap-1.5 sm:gap-2 group hover:-translate-y-0.5 hover:shadow-2xl transition-all cursor-default">
+                        <div className="card kpi-tile kpi-tile-amber px-3 sm:px-4 py-2 sm:py-3 min-w-[100px] sm:min-w-[130px] flex flex-col gap-1.5 sm:gap-2 group hover:-translate-y-0.5 hover:shadow-2xl transition-all cursor-default">
                             <div className="flex items-center justify-between gap-2">
                                 <div>
                                     <div className="text-[9px] sm:text-[10px] tracking-widest text-[color:var(--muted)] font-bold mb-0.5 sm:mb-1">
@@ -112,11 +111,10 @@ export default function HeaderBar({
                                 </div>
                                 <Activity className="w-5 h-5 sm:w-6 sm:h-6 text-[color:var(--amber)] opacity-50 group-hover:opacity-100 transition-opacity shrink-0" />
                             </div>
-                            <div className="h-0.5 bg-gradient-to-r from-amber-500/30 to-amber-500/10 rounded-full" />
                         </div>
 
                         {/* Operational Tile */}
-                        <div className="card px-3 sm:px-4 py-2 sm:py-3 min-w-[100px] sm:min-w-[130px] flex flex-col gap-1.5 sm:gap-2 group hover:-translate-y-0.5 hover:shadow-2xl transition-all cursor-default">
+                        <div className="card kpi-tile kpi-tile-lime px-3 sm:px-4 py-2 sm:py-3 min-w-[100px] sm:min-w-[130px] flex flex-col gap-1.5 sm:gap-2 group hover:-translate-y-0.5 hover:shadow-2xl transition-all cursor-default">
                             <div className="flex items-center justify-between gap-2">
                                 <div>
                                     <div className="text-[9px] sm:text-[10px] tracking-widest text-[color:var(--muted)] font-bold mb-0.5 sm:mb-1">
@@ -128,7 +126,6 @@ export default function HeaderBar({
                                 </div>
                                 <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6 text-[color:var(--lime)] opacity-50 group-hover:opacity-100 transition-opacity shrink-0" />
                             </div>
-                            <div className="h-0.5 bg-gradient-to-r from-lime-500/30 to-lime-500/10 rounded-full" />
                         </div>
                     </div>
                 </div>
@@ -138,9 +135,9 @@ export default function HeaderBar({
             <div className="mt-2 sm:mt-3 card px-3 sm:px-4 py-1.5 sm:py-2 flex flex-wrap items-center justify-between gap-2 sm:gap-3">
                 <div className="flex items-center gap-2 sm:gap-3 text-sm flex-wrap">
                     {/* Live Capsule Identity */}
-                    <div className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-gradient-to-r from-cyan-500/10 to-violet-500/10 border border-white/10 animate-shimmer">
-                        <div className="w-1.5 h-1.5 rounded-full bg-[color:var(--cyan)] animate-pulse" />
-                        <span className="text-[10px] sm:text-[11px] tracking-[0.12em] sm:tracking-[0.18em] text-white/70 font-bold">
+                    <div className="live-capsule animate-shimmer">
+                        <div className="live-dot" />
+                        <span className="text-[10px] sm:text-[11px] tracking-[0.12em] sm:tracking-[0.18em] text-white/70">
                             Monitoring: AWS • GCP • GitHub • PyPI
                         </span>
                     </div>

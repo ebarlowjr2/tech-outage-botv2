@@ -23,11 +23,11 @@ import SubtitleBar from "./components/SubtitleBar";
 import HeaderBar from "./components/HeaderBar";
 
 function StatusBadge({ s }: { s: Incident["severity"] }) {
-  const color = s === "good" ? "var(--lime)" : s === "warn" ? "var(--amber)" : "var(--rose)";
+  const chipClass = s === "good" ? "status-chip status-chip-ok" : s === "warn" ? "status-chip status-chip-warn" : "status-chip status-chip-bad";
   const label = s === "good" ? "NORMAL" : s === "warn" ? "DEGRADED" : "OUTAGE";
   return (
-    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border border-white/10 bg-white/5 text-[10px] font-bold tracking-wider" style={{ color: color, borderColor: `${color}40` }}>
-      <span className="w-1.5 h-1.5 rounded-full bg-current shadow-[0_0_8px_currentColor]" />
+    <span className={chipClass}>
+      <span className="status-dot status-dot-pulse" />
       {label}
     </span>
   );
@@ -255,21 +255,23 @@ export default function Page() {
                   )}
 
                   {incidents.map(i => (
-                    <div key={i.id} className="p-2 sm:p-3 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.06] hover:border-white/10 transition-all group cursor-default">
+                    <div key={i.id} className="feed-item group cursor-default">
                       <div className="flex items-start justify-between gap-2 sm:gap-3">
                         <div className="flex items-center gap-2 sm:gap-3">
-                          {/* Provider Logo Mark */}
-                          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-white/10 flex items-center justify-center text-[10px] sm:text-xs font-bold text-white/80 shrink-0">
+                          {/* Provider Badge */}
+                          <div className="provider-badge shrink-0">
                             {i.provider.substring(0, 2).toUpperCase()}
                           </div>
                           <div className="min-w-0">
                             <div className="text-xs sm:text-sm font-bold text-white/90 group-hover:text-[color:var(--cyan)] transition-colors truncate">{i.provider}</div>
-                            <div className="text-[9px] sm:text-[10px] font-mono text-white/40">#{i.id.slice(0, 4)}</div>
+                            <div className="time-badge mt-1">
+                              <span>#{i.id.slice(0, 4)}</span>
+                            </div>
                           </div>
                         </div>
                         <StatusBadge s={i.severity} />
                       </div>
-                      <div className="mt-2 text-[11px] sm:text-xs text-[color:var(--muted)] leading-relaxed pl-9 sm:pl-[44px]">
+                      <div className="mt-2 text-[11px] sm:text-xs text-[color:var(--muted)] leading-relaxed pl-10 sm:pl-[44px]">
                         {i.title}
                       </div>
                     </div>
@@ -292,13 +294,13 @@ export default function Page() {
                     <span>NEURAL_VOICE</span>
                     <span className="text-[color:var(--cyan)]">READY</span>
                   </div>
-                  {/* Signal Bar */}
-                  <div className="h-1 bg-white/10 rounded-full mt-2 overflow-hidden flex gap-0.5">
-                    <div className="flex-1 bg-[color:var(--cyan)] opacity-20" />
-                    <div className="flex-1 bg-[color:var(--cyan)] opacity-40" />
-                    <div className="flex-1 bg-[color:var(--cyan)] opacity-60" />
-                    <div className="flex-1 bg-[color:var(--cyan)] opacity-80" />
-                    <div className="flex-1 bg-[color:var(--cyan)]" />
+                  {/* Signal Bars */}
+                  <div className="signal-bars mt-2">
+                    <div className="signal-bar opacity-20" />
+                    <div className="signal-bar opacity-40" />
+                    <div className="signal-bar opacity-60" />
+                    <div className="signal-bar opacity-80" />
+                    <div className="signal-bar" />
                   </div>
                 </div>
               </div>

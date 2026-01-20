@@ -81,11 +81,7 @@ export default function SystemPresenter(props: SystemPresenterProps) {
                 </div>
 
                 {/* On Air Light */}
-                <div className={`px-3 py-1.5 rounded-full border text-[10px] font-bold tracking-widest transition-all duration-300 shrink-0 ${
-                    isSpeaking 
-                        ? "bg-[color:var(--rose)]/20 border-[color:var(--rose)] text-[color:var(--rose)] animate-pulse" 
-                        : "bg-white/5 border-white/10 text-white/40"
-                }`}>
+                <div className={`on-air-light shrink-0 ${isSpeaking ? "on-air-light-active" : "on-air-light-inactive"}`}>
                     ON AIR
                 </div>
             </div>
@@ -99,9 +95,11 @@ export default function SystemPresenter(props: SystemPresenterProps) {
                         exit={{ opacity: 0, height: 0 }}
                         className="mt-4 overflow-hidden"
                     >
-                        <div className="bg-black/60 backdrop-blur-sm text-[color:var(--text)] text-sm font-medium px-4 py-3 rounded-xl border border-white/10 leading-relaxed">
-                            <span className="text-[color:var(--amber)] mr-2">&#9654;</span>
-                            {captionText}
+                        <div className="caption-bar">
+                            <span className="caption-text">
+                                <span className="text-[color:var(--amber)] mr-2">&#9654;</span>
+                                {captionText}
+                            </span>
                         </div>
                     </motion.div>
                 )}
