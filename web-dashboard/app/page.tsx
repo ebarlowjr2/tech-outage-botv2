@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { createClient } from "@/src/lib/realtimeClient";
 import { classifyEvent } from "@/src/lib/classifyEvent";
 import { useEventDirector } from "@/src/lib/useEventDirector";
+import { mapIncidentRow, Incident, SupabaseIncidentRow } from "@/src/lib/mappers";
 import dynamic from 'next/dynamic';
 import { Activity, AlertTriangle, CheckCircle, Globe, Server, Radio } from 'lucide-react';
 
@@ -16,16 +17,6 @@ const CyberMap = dynamic(() => import('./components/CyberMap'), {
 
 import SystemPresenter from "./components/SystemPresenter";
 import SubtitleBar from "./components/SubtitleBar";
-
-type Incident = {
-  id: string;
-  provider: string;
-  title: string;
-  severity: "good" | "warn" | "bad";
-  status: string;
-  region?: string;
-  updatedAt: string;
-};
 
 function StatusBadge({ s }: { s: Incident["severity"] }) {
   const color = s === "good" ? "var(--lime)" : s === "warn" ? "var(--amber)" : "var(--rose)";
