@@ -41,21 +41,25 @@ def main():
     config = load_config()
     poll_interval = config.get("poll_interval_seconds", 300)
     
-    # Initialize Audio Queue (creates FIFO)
-    audio_queue = AudioQueue()
-    
-    # Initialize DB (Connection happens in DBManager init)
+    # Initialize DB 
+    db = DBManager()
     
     try:
         while True:
             logging.info("--- Starting Polling Loop ---")
             
-            # 1. Check for outages (and update DB)
+            # 1. Check for outages
             try:
-                updates = check_outages() # Returns list of new/significant updates
+                # Assuming check_outages() performs scraping and Upserting to DB
+                # Ideally check_outages(db) is better, but following existing pattern:
+                updates = check_outages() 
                 logging.info(f"Processed feeds. Found {len(updates)} significant updates.")
                 
-                # 2. Process Updates (Generate Alert Content)
+                # Fetch Context
+                internet_status = db.get_internet_condition()
+                logging.info(f"Context: Internet is {internet_status}")
+
+                # 2. Process Updates
                 for update in updates:
                     service = update['service']
                     title = update['title']
@@ -64,15 +68,14 @@ def main():
                     
                     logging.info(f"Processing Alert: {service} - {title}")
                     
-                    # Generate AI Script
-                    alert_text = generate_alert_script(service, title, status)
-                    
-                    # Insert Event into DB
-                    db = DBManager()
+                    # Generate Context-Aware Script
+                    alert_text = generate_alert_script(service, title, status, internet_status)
+                    logging.info(f"Generated Script: {alert_text}")
+
+                    # Insert Event into DB (Triggers Frontend Animation)
                     db.insert_event(incident_id, alert_text, event_type="alert")
                     
-                    # For v1: We rely on Frontend to subscribe to this event and play TTS/Animation.
-                    # We do NOT generate local audio anymore.
+                    # Audio generation removed for V1 (Frontend TTS future)
                     
             except Exception as e:
                 logging.error(f"Error in polling loop: {e}")

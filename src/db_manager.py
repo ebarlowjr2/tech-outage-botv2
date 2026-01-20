@@ -99,3 +99,17 @@ class DBManager:
             logging.info(f"Logged event for incident {incident_id}: {event_type}")
         except Exception as e:
             logging.error(f"Error inserting event: {e}")
+
+    def get_internet_condition(self):
+        """Fetches the current internet condition status."""
+        if not self.client: return "stable"
+        
+        try:
+            # Get latest row
+            response = self.client.table("internet_conditions").select("status").order("last_updated", desc=True).limit(1).execute()
+            if response.data and len(response.data) > 0:
+                return response.data[0]["status"]
+            return "stable"
+        except Exception as e:
+            logging.error(f"Error fetching internet condition: {e}")
+            return "stable"
