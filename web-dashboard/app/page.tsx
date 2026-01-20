@@ -181,13 +181,19 @@ export default function Page() {
 
           {/* Map Panel */}
           <div className="col-span-12 lg:col-span-8 card card-accent relative flex flex-col p-1 overflow-hidden group">
-            {/* Map Overlay Header */}
+            {/* Map Overlay Header (label only; timestamps live in HeaderBar) */}
             <div className="absolute top-5 left-5 z-[400] flex items-center gap-3">
               <div className="bg-black/60 backdrop-blur px-3 py-1.5 rounded-full border border-white/10 flex items-center gap-2">
-                <Globe className="w-3 h-3 text-[color:var(--cyan)]" />
+                <Globe className="w-3.5 h-3.5 text-[color:var(--cyan)]" />
                 <span className="text-xs font-bold tracking-widest text-white/90">LIVE MAP</span>
               </div>
-              <div className="text-[10px] font-mono text-white/40">Last Updated: Just now</div>
+
+              {/* Optional: lightweight mode chip (no time) */}
+              <div className="bg-black/40 backdrop-blur px-2.5 py-1 rounded-full border border-white/10">
+                <span className="text-[11px] tracking-[0.22em] text-white/60 uppercase font-bold">
+                  Service Health
+                </span>
+              </div>
             </div>
 
             {/* Map Component */}
