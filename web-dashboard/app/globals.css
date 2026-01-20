@@ -19,10 +19,26 @@
 html,
 body {
   height: 100%;
-  background: radial-gradient(1200px 800px at 20% 10%, rgba(120, 220, 255, 0.14), transparent 55%),
-    radial-gradient(900px 700px at 80% 30%, rgba(190, 110, 255, 0.12), transparent 60%),
+  background: radial-gradient(1200px 800px at 20% 10%, rgba(120, 220, 255, 0.08), transparent 55%),
+    radial-gradient(900px 700px at 80% 30%, rgba(190, 110, 255, 0.06), transparent 60%),
     linear-gradient(180deg, var(--bg0), var(--bg1));
   color: var(--text);
+  overflow: hidden;
+}
+
+/* Ambient Background Animation */
+@keyframes bgglow {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 .cyber-grid::before {
@@ -30,22 +46,22 @@ body {
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
-  background-size: 48px 48px;
-  mask-image: radial-gradient(circle at 30% 20%, rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.35), transparent 70%);
-  opacity: 0.35;
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0.4), transparent 90%);
+  opacity: 0.2;
   pointer-events: none;
 }
 
 .glass {
-  background: var(--panel);
-  border: 1px solid var(--stroke);
-  backdrop-filter: blur(14px);
+  background: rgba(10, 14, 22, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.02) inset,
-    0 12px 32px rgba(0, 0, 0, 0.45);
-  border-radius: 18px;
+    0 4px 24px -1px rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(255, 255, 255, 0.02) inset;
+  border-radius: 16px;
 }
 
 .glow-edge {
@@ -53,14 +69,44 @@ body {
 }
 
 .glow-edge::after {
+  display: none;
+}
+
+/* Monitoring Node Pulse (Blue/Idle) */
+@keyframes monitorPulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.2;
+  }
+
+  50% {
+    transform: scale(3);
+    opacity: 0;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+.monitoring-node {
+  position: relative;
+}
+
+.monitoring-node::after {
   content: "";
   position: absolute;
-  inset: -1px;
-  border-radius: 18px;
-  background: linear-gradient(90deg, rgba(90, 240, 255, 0.35), rgba(190, 110, 255, 0.25), rgba(90, 240, 255, 0.35));
-  filter: blur(10px);
-  opacity: 0.35;
+  top: 50%;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  background: var(--stroke);
+  /* Cyan-ish */
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
   z-index: -1;
+  animation: monitorPulse 3s infinite ease-out;
 }
 
 .kpi {

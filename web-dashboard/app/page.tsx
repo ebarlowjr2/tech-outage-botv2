@@ -4,13 +4,16 @@ import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabaseClient";
 import dynamic from 'next/dynamic';
-import RobotWidget from "./components/RobotWidget";
 
+
+// Dynamic import for Map to avoid SSR issues
 // Dynamic import for Map to avoid SSR issues
 const CyberMap = dynamic(() => import('./components/CyberMap'), {
   ssr: false,
   loading: () => <div className="w-full h-full bg-black/50 animate-pulse rounded-xl flex items-center justify-center text-cyan-500/50">INITIALIZING GEOSPATIAL UPLINK...</div>
 });
+
+import SystemPresenter from "./components/SystemPresenter";
 
 type Incident = {
   id: string;
@@ -86,7 +89,7 @@ export default function Page() {
   // ticker text
   const ticker = useMemo(() => {
     const items = incidents.map(i => `${i.provider}: ${i.title} (${i.status})`);
-    return items.length ? items.join("  ///  ") : "NO ACTIVE THREATS DETECTED  ///  SYSTEMS NOMINAL";
+    return items.length ? items.join("  ///  ") : "ALL SYSTEMS OPERATIONAL  ///  MONITORING ACTIVE";
   }, [incidents]);
 
   return (
@@ -94,26 +97,26 @@ export default function Page() {
       <div className="cyber-grid absolute inset-0" />
 
       {/* Robot Overlay (Absolute) */}
-      <RobotWidget />
+      <SystemPresenter />
 
       <div className="relative mx-auto max-w-[1600px] px-5 py-6 h-screen flex flex-col">
         {/* Top bar */}
         <div className="flex items-center justify-between gap-4 shrink-0">
           <div>
-            <div className="text-xs tracking-[0.35em] text-[color:var(--muted)]">LIVE • TECH OUTAGE COMMAND</div>
-            <div className="text-2xl font-semibold tracking-tight text-white/90">CYBERWATCH <span className="text-cyan-400">V2.0</span></div>
+            <div className="text-xs tracking-[0.35em] text-[color:var(--muted)] font-medium">LIVE • GLOBAL AVAILABILITY</div>
+            <div className="text-2xl font-semibold tracking-tight text-white/90">TECH OUTAGE <span className="text-cyan-400">WATCH</span></div>
           </div>
           <div className="flex items-center gap-3">
-            <div className="kpi px-4 py-2 min-w-[120px]">
-              <div className="text-[10px] tracking-[0.2em] text-[color:var(--muted)] text-center">CRITICAL</div>
+            <div className="kpi px-4 py-2 min-w-[140px]">
+              <div className="text-[10px] tracking-[0.1em] text-[color:var(--muted)] text-center font-medium">MAJOR OUTAGES</div>
               <div className="text-2xl font-bold text-center text-red-500">{activeCounts.bad}</div>
             </div>
-            <div className="kpi px-4 py-2 min-w-[120px]">
-              <div className="text-[10px] tracking-[0.2em] text-[color:var(--muted)] text-center">DEGRADED</div>
+            <div className="kpi px-4 py-2 min-w-[140px]">
+              <div className="text-[10px] tracking-[0.1em] text-[color:var(--muted)] text-center font-medium">PARTIAL DEGRADATION</div>
               <div className="text-2xl font-bold text-center text-yellow-500">{activeCounts.warn}</div>
             </div>
-            <div className="kpi px-4 py-2 min-w-[120px]">
-              <div className="text-[10px] tracking-[0.2em] text-[color:var(--muted)] text-center">OPERATIONAL</div>
+            <div className="kpi px-4 py-2 min-w-[140px]">
+              <div className="text-[10px] tracking-[0.1em] text-[color:var(--muted)] text-center font-medium">OPERATIONAL APPS</div>
               <div className="text-2xl font-bold text-center text-teal-400">{activeCounts.ok}</div>
             </div>
           </div>
@@ -126,7 +129,7 @@ export default function Page() {
           <div className="col-span-12 lg:col-span-8 glass glow-edge p-1 flex flex-col relative group">
             {/* Map Header Overlay */}
             <div className="absolute top-4 left-4 z-[400] bg-black/60 backdrop-blur px-3 py-1 rounded border border-white/10 pointer-events-none">
-              <div className="text-xs tracking-[0.2em] text-cyan-400">GLOBAL THREAT MAP</div>
+              <div className="text-xs tracking-[0.2em] text-cyan-400">GLOBAL SERVICE STATUS</div>
             </div>
 
             <div className="w-full h-full rounded-lg overflow-hidden relative bg-[#05070d]">
@@ -145,7 +148,7 @@ export default function Page() {
               <div className="p-2 space-y-2 overflow-y-auto flex-1">
                 {incidents.length === 0 && (
                   <div className="h-full flex items-center justify-center text-white/20 text-sm tracking-widest animate-pulse">
-                    NO ACTIVE SIGNALS
+                    NO ACTIVE OUTAGES
                   </div>
                 )}
                 {incidents.map(i => (
