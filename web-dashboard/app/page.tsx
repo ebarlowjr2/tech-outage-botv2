@@ -202,7 +202,24 @@ export default function Page() {
           />
         </div>
 
-        {/* MainContent: Starts BELOW header with padding - overflow-hidden to contain grid */}
+        {/* Ticker - News-style scrolling banner at top */}
+        <div className="card h-10 mt-2 shrink-0 flex items-center overflow-hidden bg-black/60 backdrop-blur-md border-0 border-b border-white/5">
+          <div className="px-5 h-full flex items-center bg-[color:var(--rose)]/10 border-r border-white/5 text-[color:var(--rose)] text-[10px] font-bold tracking-widest z-10 gap-2">
+            <div className="w-1.5 h-1.5 bg-current rounded-full animate-pulse" />
+            BREAKING
+          </div>
+          <div className="flex-1 relative h-full flex items-center overflow-hidden">
+            <motion.div
+              className="absolute whitespace-nowrap text-xs font-mono font-medium text-[color:var(--text)] opacity-80"
+              animate={{ x: ["100%", "-100%"] }}
+              transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
+            >
+              {ticker}
+            </motion.div>
+          </div>
+        </div>
+
+        {/* MainContent: Starts BELOW ticker with padding - overflow-hidden to contain grid */}
         <div className="flex-1 min-h-0 pt-4 overflow-hidden">
           <div className="grid grid-cols-12 gap-4 h-full">
 
@@ -309,23 +326,6 @@ export default function Page() {
               </div>
 
             </div>
-          </div>
-        </div>
-
-        {/* Ticker Bottom - mt-4 for spacing, shrink-0 to prevent shrinking */}
-        <div className="card h-10 mt-4 shrink-0 flex items-center overflow-hidden bg-black/60 backdrop-blur-md border-0 border-t border-white/5">
-          <div className="px-5 h-full flex items-center bg-[color:var(--rose)]/10 border-r border-white/5 text-[color:var(--rose)] text-[10px] font-bold tracking-widest z-10 gap-2">
-            <div className="w-1.5 h-1.5 bg-current rounded-full animate-pulse" />
-            BREAKING
-          </div>
-          <div className="flex-1 relative h-full flex items-center overflow-hidden">
-            <motion.div
-              className="absolute whitespace-nowrap text-xs font-mono font-medium text-[color:var(--text)] opacity-80"
-              animate={{ x: ["100%", "-100%"] }}
-              transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
-            >
-              {ticker}
-            </motion.div>
           </div>
         </div>
 
