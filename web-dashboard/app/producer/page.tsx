@@ -105,7 +105,7 @@ export default function ProducerPage() {
 
     if (!authenticated) {
         return (
-            <div className="h-screen flex items-center justify-center bg-black text-white">
+            <div className="h-full flex items-center justify-center bg-black text-white">
                 <div className="card p-8 max-w-sm w-full space-y-4">
                     <div className="flex items-center gap-2 text-[color:var(--cyan)] mb-4">
                         <Lock className="w-6 h-6" />
@@ -127,7 +127,7 @@ export default function ProducerPage() {
     }
 
     return (
-        <div className="min-h-screen bg-[#05070d] text-white p-8">
+        <div className="h-full overflow-auto bg-[#05070d] text-white p-8">
             <div className="max-w-4xl mx-auto space-y-8">
 
                 {/* Header */}

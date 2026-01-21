@@ -227,6 +227,13 @@
 }
 
 /* Background with more color */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
 body {
   background:
     radial-gradient(900px 600px at 15% 10%, rgba(90, 240, 255, 0.18), transparent 60%),
@@ -234,7 +241,6 @@ body {
     radial-gradient(700px 520px at 55% 85%, rgba(50, 255, 180, 0.10), transparent 60%),
     linear-gradient(180deg, var(--bg), #050711);
   color: var(--text);
-  min-height: 100vh;
   font-family: sans-serif;
   /* Next.js usually injects var(--font-geist-sans) but fallback to sans */
 }
