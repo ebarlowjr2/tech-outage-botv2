@@ -202,9 +202,9 @@ export default function Page() {
           />
         </div>
 
-        {/* MainContent: Starts BELOW header with padding */}
-        <div className="flex-1 min-h-0 pt-4">
-          <div className="grid grid-cols-12 gap-6 h-full">
+        {/* MainContent: Starts BELOW header with padding - overflow-hidden to contain grid */}
+        <div className="flex-1 min-h-0 pt-4 overflow-hidden">
+          <div className="grid grid-cols-12 gap-4 h-full">
 
             {/* Map Panel */}
             <div className="col-span-12 lg:col-span-8 card card-accent relative flex flex-col p-1 overflow-hidden group">
@@ -312,8 +312,8 @@ export default function Page() {
           </div>
         </div>
 
-        {/* Ticker Bottom */}
-        <div className="card h-10 mt-auto shrink-0 flex items-center overflow-hidden bg-black/60 backdrop-blur-md border-0 border-t border-white/5">
+        {/* Ticker Bottom - mt-4 for spacing, shrink-0 to prevent shrinking */}
+        <div className="card h-10 mt-4 shrink-0 flex items-center overflow-hidden bg-black/60 backdrop-blur-md border-0 border-t border-white/5">
           <div className="px-5 h-full flex items-center bg-[color:var(--rose)]/10 border-r border-white/5 text-[color:var(--rose)] text-[10px] font-bold tracking-widest z-10 gap-2">
             <div className="w-1.5 h-1.5 bg-current rounded-full animate-pulse" />
             BREAKING
