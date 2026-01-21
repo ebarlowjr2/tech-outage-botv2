@@ -180,17 +180,17 @@ export default function Page() {
   }, [incidents, hasReceivedData]);
 
   return (
-    <div className="relative min-h-screen overflow-hidden text-[color:var(--text)]">
+    <div className="relative h-[100dvh] overflow-hidden text-[color:var(--text)]">
       {/* Background handled by globals.css body */}
 
-      {/* Subtitle Bar (TV-style bottom overlay) - positioned above ticker */}
+      {/* Subtitle Bar (TV-style bottom overlay) - fixed position, doesn't affect layout */}
       <SubtitleBar
         text={director.captionText}
         isSpeaking={director.isSpeaking}
       />
 
-      {/* AppFrame: Fixed layout contract - use dvh for dynamic viewport height */}
-      <div className="relative mx-auto max-w-[1600px] px-6 py-4 h-[100dvh] flex flex-col">
+      {/* AppFrame: Fixed layout contract - fills parent height */}
+      <div className="relative mx-auto max-w-[1600px] px-6 py-4 h-full flex flex-col">
 
         {/* HeaderBar: Fixed height (140px min), no overlap */}
         <div className="shrink-0" style={{ minHeight: '140px' }}>
