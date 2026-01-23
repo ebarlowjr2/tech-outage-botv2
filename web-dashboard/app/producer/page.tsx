@@ -12,8 +12,39 @@ export default function ProducerPage() {
     const [simProvider, setSimProvider] = useState("TEST-NET");
     const [simTitle, setSimTitle] = useState("Simulated Latency Spike");
     const [simSeverity, setSimSeverity] = useState("warn");
+    const [simRegion, setSimRegion] = useState("");
     const [announcement, setAnnouncement] = useState("");
     const [contextStatus, setContextStatus] = useState("stable");
+
+    // Presets for quick testing
+    const applyPreset = (preset: string) => {
+        switch (preset) {
+            case "aws-us-east-1":
+                setSimProvider("AWS");
+                setSimTitle("EC2 API Degradation - us-east-1");
+                setSimSeverity("warn");
+                setSimRegion("us-east-1");
+                break;
+            case "aws-outage":
+                setSimProvider("AWS");
+                setSimTitle("Major S3 Outage - Global");
+                setSimSeverity("bad");
+                setSimRegion("us-east-1");
+                break;
+            case "gcp-degraded":
+                setSimProvider("GCP");
+                setSimTitle("Cloud Functions Latency - us-west1");
+                setSimSeverity("warn");
+                setSimRegion("us-west-2");
+                break;
+            case "github-outage":
+                setSimProvider("GitHub");
+                setSimTitle("Actions Service Unavailable");
+                setSimSeverity("bad");
+                setSimRegion("");
+                break;
+        }
+    };
 
     // Auth Check (Simple)
     const checkAuth = () => {
@@ -148,9 +179,27 @@ export default function ProducerPage() {
                         <div className="flex items-center gap-2 text-red-400 font-bold tracking-widest text-sm">
                             <ShieldAlert className="w-4 h-4" /> INJECT OUTAGE
                         </div>
+                        
+                        {/* Quick Presets */}
+                        <div className="flex flex-wrap gap-2">
+                            <button onClick={() => applyPreset("aws-us-east-1")} className="px-2 py-1 text-[10px] bg-amber-500/20 border border-amber-500/50 text-amber-400 rounded hover:bg-amber-500/30">
+                                AWS us-east-1
+                            </button>
+                            <button onClick={() => applyPreset("aws-outage")} className="px-2 py-1 text-[10px] bg-red-500/20 border border-red-500/50 text-red-400 rounded hover:bg-red-500/30">
+                                AWS Outage
+                            </button>
+                            <button onClick={() => applyPreset("gcp-degraded")} className="px-2 py-1 text-[10px] bg-amber-500/20 border border-amber-500/50 text-amber-400 rounded hover:bg-amber-500/30">
+                                GCP Degraded
+                            </button>
+                            <button onClick={() => applyPreset("github-outage")} className="px-2 py-1 text-[10px] bg-red-500/20 border border-red-500/50 text-red-400 rounded hover:bg-red-500/30">
+                                GitHub Outage
+                            </button>
+                        </div>
+                        
                         <div className="space-y-3">
                             <input className="w-full bg-black/40 border border-white/10 p-2 rounded text-sm" placeholder="Provider (e.g. AWS)" value={simProvider} onChange={e => setSimProvider(e.target.value)} />
                             <input className="w-full bg-black/40 border border-white/10 p-2 rounded text-sm" placeholder="Title (e.g. API Failure)" value={simTitle} onChange={e => setSimTitle(e.target.value)} />
+                            <input className="w-full bg-black/40 border border-white/10 p-2 rounded text-sm" placeholder="Region (e.g. us-east-1)" value={simRegion} onChange={e => setSimRegion(e.target.value)} />
                             <select className="w-full bg-black/40 border border-white/10 p-2 rounded text-sm text-gray-400" value={simSeverity} onChange={e => setSimSeverity(e.target.value)}>
                                 <option value="warn">Warn (Degraded)</option>
                                 <option value="bad">Bad (Outage)</option>

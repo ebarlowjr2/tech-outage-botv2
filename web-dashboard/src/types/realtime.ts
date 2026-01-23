@@ -23,4 +23,5 @@ export type DirectorState = {
     captionText: string | null;
     isSpeaking: boolean;
     lastSpokenAt: string | null;
+    activeIncidentId: string | null;
 };

@@ -15,10 +15,10 @@ type ConnectionStatus = "LIVE" | "RECONNECTING" | "OFFLINE";
 // Number of monitored services (AWS, GCP, GitHub, PyPI)
 const MONITORED_SERVICES_COUNT = 4;
 
-// Dynamic import for Map to avoid SSR issues
-const CyberMap = dynamic(() => import('./components/CyberMap'), {
+// Dynamic import for Globe to avoid SSR issues (Cesium requires browser)
+const GlobePanel = dynamic(() => import('./components/GlobePanel'), {
   ssr: false,
-  loading: () => <div className="w-full h-full flex items-center justify-center text-cyan-500/50 animate-pulse">INITIALIZING MAP...</div>
+  loading: () => <div className="w-full h-full flex items-center justify-center text-cyan-500/50 animate-pulse">INITIALIZING GLOBE...</div>
 });
 
 import SubtitleBar from "./components/SubtitleBar";
@@ -223,26 +223,21 @@ export default function Page() {
         <div className="flex-1 min-h-0 pt-4 overflow-hidden">
           <div className="grid grid-cols-12 gap-4 h-full">
 
-            {/* Map Panel */}
+            {/* Globe Panel - 3D Cesium Globe */}
             <div className="col-span-12 lg:col-span-8 card card-accent relative flex flex-col p-1 overflow-hidden group">
-              {/* Map Overlay Header - using map-chip class */}
-              <div className="absolute top-5 left-5 z-[400] flex items-center gap-3">
-                <div className="map-chip">
-                  <Globe className="w-3.5 h-3.5 text-[color:var(--cyan)]" />
-                  <span className="text-xs font-bold tracking-widest text-white/90">LIVE MAP</span>
-                </div>
-
-                <div className="map-chip bg-black/40">
-                  <span className="text-[11px] tracking-[0.22em] text-white/60 uppercase font-bold">
-                    Service Health
-                  </span>
-                </div>
-              </div>
-
-              {/* Map Component */}
+              {/* Globe Component - includes its own overlay chips */}
               <div className="flex-1 rounded-xl overflow-hidden bg-[#05070d] relative">
-                <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.03] pointer-events-none mix-blend-overlay" />
-                <CyberMap incidents={incidents} />
+                <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.03] pointer-events-none mix-blend-overlay z-10" />
+                <GlobePanel 
+                  incidents={incidents.map(i => ({
+                    id: i.id,
+                    provider: i.provider,
+                    title: i.title,
+                    severity: i.severity,
+                    regions: i.region ? [i.region] : undefined,
+                  }))}
+                  activeIncidentId={director.activeIncidentId}
+                />
               </div>
             </div>
 
