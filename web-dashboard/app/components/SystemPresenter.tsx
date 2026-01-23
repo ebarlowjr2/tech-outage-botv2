@@ -29,24 +29,12 @@ export default function SystemPresenter(props: SystemPresenterProps) {
                     'STANDING BY';
 
     return (
-        <div className="absolute top-6 right-6 z-50 pointer-events-none flex flex-col items-end gap-4">
-            {/* NOC BOT Panel */}
-            <div className={`card p-4 flex items-center gap-4 transition-all duration-500 ${isActive ? "border-[color:var(--amber)] bg-[color:var(--bg)]" : "border-[color:var(--stroke)]"}`}>
-
-                {/* Status Text */}
-                <div className="flex flex-col items-end">
-                    <div className="text-[10px] tracking-widest text-[color:var(--muted)] font-bold">NOC BOT</div>
-                    <div className="flex items-center gap-2 mt-1">
-                        <span className={`text-xs font-mono font-bold transition-colors duration-500 ${isActive ? "text-[color:var(--amber)]" : "text-[color:var(--cyan)]"}`}>
-                            {label}
-                        </span>
-                        <div className={`w-2 h-2 rounded-full ${isSpeaking ? "bg-[color:var(--amber)] animate-ping" : "bg-[color:var(--cyan)]"}`} />
-                    </div>
-                </div>
-
+        <div className="card card-accent p-4 shrink-0">
+            {/* NOC BOT Panel - part of layout flow, not absolute */}
+            <div className="flex items-center justify-between gap-4">
                 {/* Avatar Orb */}
                 <motion.div
-                    className="relative w-12 h-12 flex items-center justify-center"
+                    className="relative w-14 h-14 flex items-center justify-center shrink-0"
                     animate={
                         presenterState === 'IDLE' ? { scale: [1, 1.02, 1] } :
                             presenterState === 'TALKING' ? { scale: [1, 1.06, 1] } :
@@ -58,10 +46,10 @@ export default function SystemPresenter(props: SystemPresenterProps) {
                     <div className={`absolute inset-0 rounded-full blur-md opacity-60 transition-all duration-1000 bg-gradient-to-r ${accent}`} />
 
                     {/* Inner Core */}
-                    <div className="relative z-10 w-10 h-10 bg-black/80 rounded-full flex items-center justify-center border border-white/20">
+                    <div className="relative z-10 w-12 h-12 bg-black/80 rounded-full flex items-center justify-center border border-white/20">
                         {isActive
-                            ? <Activity className="w-5 h-5 text-[color:var(--amber)]" />
-                            : <ShieldCheck className="w-5 h-5 text-[color:var(--cyan)]" />
+                            ? <Activity className="w-6 h-6 text-[color:var(--amber)]" />
+                            : <ShieldCheck className="w-6 h-6 text-[color:var(--cyan)]" />
                         }
                     </div>
 
@@ -77,35 +65,39 @@ export default function SystemPresenter(props: SystemPresenterProps) {
                         />
                     )}
                 </motion.div>
+
+                {/* Status Text */}
+                <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                        <span className="text-[10px] tracking-widest text-[color:var(--muted)] font-bold">NOC BOT</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <div className={`w-2 h-2 rounded-full shrink-0 ${isSpeaking ? "bg-[color:var(--amber)] animate-ping" : isActive ? "bg-[color:var(--amber)]" : "bg-[color:var(--cyan)]"}`} />
+                        <span className={`text-sm font-mono font-bold transition-colors duration-500 truncate ${isActive ? "text-[color:var(--amber)]" : "text-[color:var(--cyan)]"}`}>
+                            {label}
+                        </span>
+                    </div>
+                </div>
+
+                {/* On Air Light */}
+                <div className={`px-3 py-1.5 rounded-full border text-[10px] font-bold tracking-widest transition-all duration-300 shrink-0 ${isSpeaking ? "bg-rose-500/20 border-rose-500 text-rose-500 animate-pulse" : "bg-white/5 border-white/10 text-white/40"}`}>
+                    ON AIR
+                </div>
             </div>
 
-            {/* Captions Box */}
+            {/* Caption Area */}
             {captionText && (
                 <motion.div
-                    initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                    className="max-w-xl"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="mt-4 overflow-hidden"
                 >
-                    <div className="bg-black/80 text-[color:var(--text)] text-lg font-medium px-6 py-4 rounded-full border border-white/10 shadow-2xl backdrop-blur-xl text-center leading-relaxed">
-                        <span className="text-[color:var(--amber)] mr-3">▶</span>
+                    <div className="bg-black/80 text-[color:var(--text)] text-base font-medium px-5 py-3 rounded-xl border border-white/10 shadow-xl backdrop-blur-xl leading-relaxed">
+                        <span className="text-[color:var(--amber)] mr-2">▶</span>
                         {captionText}
                     </div>
                 </motion.div>
-            )}
-
-            {/* Subtitle (optional) */}
-            {subtitleText && (
-                <div className="text-sm text-[color:var(--muted)] text-right">
-                    {subtitleText}
-                </div>
-            )}
-
-            {/* Last spoken timestamp */}
-            {lastSpokenAt && (
-                <div className="text-xs text-white/30 font-mono">
-                    Last: {new Date(lastSpokenAt).toLocaleTimeString()}
-                </div>
             )}
         </div>
     );

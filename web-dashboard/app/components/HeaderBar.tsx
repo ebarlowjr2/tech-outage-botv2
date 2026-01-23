@@ -1,6 +1,9 @@
 "use client";
 
-import { AlertTriangle, Activity, CheckCircle } from "lucide-react";
+import { AlertTriangle, Activity, CheckCircle, Wifi, WifiOff } from "lucide-react";
+
+// Connection status type
+type ConnectionStatus = "LIVE" | "RECONNECTING" | "OFFLINE";
 
 export type HeaderBarProps = {
     activeCounts: {
@@ -8,16 +11,41 @@ export type HeaderBarProps = {
         warn: number;
         ok: number;
     };
-    // Add these two so we stop stacking text in random places
+    connectionStatus?: ConnectionStatus;
     presenterLabel?: string; // e.g. "NOC BOT • STANDING BY"
     lastUpdatedLabel?: string; // e.g. "Last updated: Just now"
 };
 
 export default function HeaderBar({
     activeCounts,
+    connectionStatus = "LIVE",
     presenterLabel = "NOC BOT • STANDING BY",
     lastUpdatedLabel = "Last updated: —",
 }: HeaderBarProps) {
+    // Connection status styling
+    const connectionStyles = {
+        LIVE: {
+            color: "var(--lime)",
+            label: "LIVE",
+            icon: Wifi,
+            animate: true,
+        },
+        RECONNECTING: {
+            color: "var(--amber)",
+            label: "RECONNECTING",
+            icon: Wifi,
+            animate: true,
+        },
+        OFFLINE: {
+            color: "var(--rose)",
+            label: "OFFLINE",
+            icon: WifiOff,
+            animate: false,
+        },
+    };
+
+    const connStyle = connectionStyles[connectionStatus];
+    const ConnIcon = connStyle.icon;
     return (
         <header className="shrink-0">
             {/* Row 1: Brand + KPIs */}
@@ -25,9 +53,23 @@ export default function HeaderBar({
                 {/* Brand block */}
                 <div className="col-span-12 lg:col-span-6">
                     <div className="flex items-center gap-3 mb-2">
-                        <div className="w-2 h-2 bg-[color:var(--cyan)] rounded-full animate-pulse" />
+                        {/* Connection Status Indicator */}
+                        <div className="flex items-center gap-2">
+                            <div 
+                                className={`w-2 h-2 rounded-full ${connStyle.animate ? "animate-pulse" : ""}`}
+                                style={{ backgroundColor: connStyle.color, boxShadow: `0 0 8px ${connStyle.color}` }}
+                            />
+                            <ConnIcon className="w-3.5 h-3.5" style={{ color: connStyle.color }} />
+                        </div>
+                        <div 
+                            className="text-xs tracking-[0.3em] font-bold opacity-90"
+                            style={{ color: connStyle.color }}
+                        >
+                            {connStyle.label}
+                        </div>
+                        <span className="text-white/30 text-xs">•</span>
                         <div className="text-xs tracking-[0.3em] font-bold text-[color:var(--cyan)] opacity-80">
-                            LIVE • GLOBAL AVAILABILITY
+                            GLOBAL AVAILABILITY
                         </div>
                     </div>
 

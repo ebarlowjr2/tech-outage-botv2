@@ -21,6 +21,7 @@ export function useEventDirector(options: DirectorOptions = {}) {
         captionText: null,
         isSpeaking: false,
         lastSpokenAt: null,
+        activeIncidentId: null,
     });
 
     // Queue management
@@ -52,6 +53,7 @@ export function useEventDirector(options: DirectorOptions = {}) {
             captionText: null,
             isSpeaking: false,
             lastSpokenAt: state.lastSpokenAt,
+            activeIncidentId: null,
         });
 
         // Mark as no longer processing (will be restarted immediately)
@@ -132,6 +134,7 @@ export function useEventDirector(options: DirectorOptions = {}) {
                     ...prev,
                     presenterState: 'IDLE',
                     isSpeaking: false,
+                    activeIncidentId: null,
                 }));
                 return;
             }
@@ -160,6 +163,9 @@ export function useEventDirector(options: DirectorOptions = {}) {
             presenterState = 'ALERT';
         }
 
+        // Extract incident ID from metadata if available
+        const incidentId = event.metadata?.id || null;
+
         // Update state
         setState({
             presenterState,
@@ -167,6 +173,7 @@ export function useEventDirector(options: DirectorOptions = {}) {
             captionText: event.caption,
             isSpeaking: true,
             lastSpokenAt: event.timestamp,
+            activeIncidentId: incidentId,
         });
 
         // Clear after display duration
@@ -184,6 +191,7 @@ export function useEventDirector(options: DirectorOptions = {}) {
                 captionText: null,
                 subtitleText: null,
                 isSpeaking: false,
+                activeIncidentId: null,
             }));
 
             // Process next event after a brief gap
