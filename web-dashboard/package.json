@@ -6,12 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint",
-    "postinstall": "node scripts/copy-cesium-assets.mjs"
+    "lint": "eslint"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.90.1",
-    "cesium": "^1.137.0",
     "clsx": "^2.1.1",
     "framer-motion": "^12.27.1",
     "globe.gl": "^2.46.1",
@@ -21,7 +19,6 @@
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-leaflet": "^5.0.0",
-    "resium": "^1.19.3",
     "tailwind-merge": "^3.4.0",
     "three": "^0.184.0"
   },
