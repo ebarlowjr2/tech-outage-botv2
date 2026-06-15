@@ -36,7 +36,10 @@ export default function Page() {
 
         if (!cancelled) {
           setIncidents(normalizedIncidents);
-          setSelectedId(normalizedIncidents[0]?.id ?? "");
+          setSelectedId((currentId) => {
+            if (normalizedIncidents.some((incident) => incident.id === currentId)) return currentId;
+            return normalizedIncidents[0]?.id ?? "";
+          });
         }
       } catch (error) {
         console.warn("[dashboard] failed to load normalized outage feed", error);
@@ -44,14 +47,16 @@ export default function Page() {
     }
 
     loadOutages();
+    const refreshTimer = window.setInterval(loadOutages, 60_000);
 
     return () => {
       cancelled = true;
+      window.clearInterval(refreshTimer);
     };
   }, []);
 
   const selectedIncident = useMemo(() => {
-    return incidents.find((incident) => incident.id === selectedId) ?? incidents[0];
+    return incidents.find((incident) => incident.id === selectedId) ?? incidents[0] ?? monitoringIncident;
   }, [incidents, selectedId]);
 
   const severityCounts = useMemo<SeverityCounts>(() => {
@@ -126,21 +131,7 @@ export default function Page() {
           <IncidentFeed incidents={incidents} selectedId={selectedId} onSelect={setSelectedId} />
         </PanelFrame>
 
-        {selectedIncident ? (
-          <MainSituationPanel incident={selectedIncident} incidents={incidents} />
-        ) : (
-          <PanelFrame
-            title="Global Situation"
-            subtitle="No active normalized outages"
-            className="h-full flex flex-col"
-            bodyClassName="flex-1 min-h-0 flex items-center justify-center"
-          >
-            <div className="text-center text-[color:var(--muted)]">
-              <div className="kicker">Monitoring</div>
-              <div className="mt-3 text-sm">No active high or medium confidence outage events in the current feed.</div>
-            </div>
-          </PanelFrame>
-        )}
+        <MainSituationPanel incident={selectedIncident} incidents={incidents} />
 
         <StatsRail
           activeCount={incidents.length}
@@ -162,4 +153,23 @@ const severityWeight = {
   major: 3,
   minor: 2,
   info: 1,
+};
+
+const monitoringIncident: Incident = {
+  id: "global-watch",
+  provider: "Global Watch",
+  title: "No active normalized outages detected",
+  severity: "info",
+  region: "worldwide",
+  lat: 20,
+  lng: 0,
+  timestamp: "Live",
+  status: "Monitoring",
+  category: "Operations",
+  summary: "Automated ingestion is standing by and scanning provider status feeds for new tech and power outage signals.",
+  impactedServices: ["Status feeds", "Network monitors", "Power outage sources"],
+  updates: 0,
+  confidence: "high",
+  confidenceScore: 100,
+  source: "monitoring-shell",
 };

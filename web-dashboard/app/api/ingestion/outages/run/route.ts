@@ -4,18 +4,23 @@ import { runOutageIngestionOnce } from "@/src/ingestion/scheduler";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-export async function POST(request: NextRequest) {
-  const secret = process.env.INGESTION_SECRET;
+function hasBearerSecret(request: NextRequest, secret?: string) {
+  return Boolean(secret && request.headers.get("authorization") === `Bearer ${secret}`);
+}
 
-  if (!secret) {
-    return NextResponse.json({ error: "INGESTION_SECRET is not configured" }, { status: 500 });
-  }
+function hasIngestionSecret(request: NextRequest) {
+  return hasBearerSecret(request, process.env.INGESTION_SECRET);
+}
 
-  const authHeader = request.headers.get("authorization");
-  if (authHeader !== `Bearer ${secret}`) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+function hasCronSecret(request: NextRequest) {
+  return hasBearerSecret(request, process.env.CRON_SECRET);
+}
 
+function isVercelCronRequest(request: NextRequest) {
+  return request.headers.get("user-agent")?.toLowerCase().includes("vercel-cron") ?? false;
+}
+
+async function runIngestion() {
   try {
     const result = await runOutageIngestionOnce();
     return NextResponse.json({
@@ -28,4 +33,24 @@ export async function POST(request: NextRequest) {
     console.error("[ingestion] run failed", error);
     return NextResponse.json({ error: "Outage ingestion failed" }, { status: 500 });
   }
+}
+
+export async function GET(request: NextRequest) {
+  if (!hasIngestionSecret(request) && !hasCronSecret(request) && !isVercelCronRequest(request)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  return runIngestion();
+}
+
+export async function POST(request: NextRequest) {
+  if (!process.env.INGESTION_SECRET) {
+    return NextResponse.json({ error: "INGESTION_SECRET is not configured" }, { status: 500 });
+  }
+
+  if (!hasIngestionSecret(request)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  return runIngestion();
 }

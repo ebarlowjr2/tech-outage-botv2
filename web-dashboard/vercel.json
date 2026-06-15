@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/ingestion/outages/run",
+      "schedule": "*/15 * * * *"
+    }
+  ]
+}
