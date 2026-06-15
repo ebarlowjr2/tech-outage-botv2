@@ -20,6 +20,7 @@ export function StatsRail({
   ingestStatus,
 }: StatsRailProps) {
   const total = Object.values(severityCounts).reduce((sum, v) => sum + v, 0);
+  const denominator = Math.max(total, 1);
 
   return (
     <div className="flex flex-col gap-2 h-full min-h-0 overflow-y-auto pr-1">
@@ -42,7 +43,7 @@ export function StatsRail({
                 <span className="font-mono text-white/90">{value}</span>
               </div>
               <div className="stat-bar mt-2">
-                <span style={{ width: `${Math.max((value / total) * 100, 6)}%`, background: color }} />
+                <span style={{ width: `${value > 0 ? Math.max((value / denominator) * 100, 6) : 0}%`, background: color }} />
               </div>
             </div>
           ))}

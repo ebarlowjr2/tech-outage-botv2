@@ -17,8 +17,13 @@ interface GlobePoint {
   lng: number;
   severity: Severity;
   category: string;
+  baseColor: string;
   color: string;
   size: number;
+  confidence?: Incident["confidence"];
+  confidenceScore?: number;
+  source?: string;
+  rawUrl?: string;
 }
 
 interface GlobeArc {
@@ -38,6 +43,18 @@ const severityColor: Record<Severity, string> = {
 
 const operationsHub = { lat: 39.04, lng: -77.49 };
 
+const confidenceOpacity: Record<NonNullable<Incident["confidence"]>, number> = {
+  high: 1,
+  medium: 0.68,
+  low: 0.35,
+};
+
+const confidenceLabel: Record<NonNullable<Incident["confidence"]>, string> = {
+  high: "Confirmed",
+  medium: "Likely / Monitoring",
+  low: "Unconfirmed signal",
+};
+
 export function RotatingGlobe({ incidents, selectedIncident }: RotatingGlobeProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const globeRef = useRef<GlobeInstance | null>(null);
@@ -52,8 +69,13 @@ export function RotatingGlobe({ incidents, selectedIncident }: RotatingGlobeProp
         lng: incident.lng,
         severity: incident.severity,
         category: incident.category,
-        color: severityColor[incident.severity],
+        baseColor: severityColor[incident.severity],
+        color: withAlpha(severityColor[incident.severity], confidenceOpacity[incident.confidence ?? "medium"]),
         size: incident.severity === "critical" ? 0.42 : incident.severity === "major" ? 0.34 : 0.26,
+        confidence: incident.confidence,
+        confidenceScore: incident.confidenceScore,
+        source: incident.source,
+        rawUrl: incident.rawUrl,
       })),
     [incidents],
   );
@@ -101,7 +123,14 @@ export function RotatingGlobe({ incidents, selectedIncident }: RotatingGlobeProp
         .pointColor("color")
         .pointLabel((point) => {
           const outage = point as GlobePoint;
-          return `${outage.provider} | ${outage.category}<br/>${outage.title}`;
+          return [
+            `<strong>${outage.title}</strong>`,
+            `${outage.provider} | ${outage.category}`,
+            `Severity: ${outage.severity}`,
+            `Confidence: ${confidenceLabel[outage.confidence ?? "medium"]}`,
+            outage.source ? `Source: ${outage.source}` : undefined,
+            outage.rawUrl ? `<a href="${outage.rawUrl}" target="_blank" rel="noreferrer">Raw source</a>` : undefined,
+          ].filter(Boolean).join("<br/>");
         })
         .pointsMerge(false)
         .ringsData(points)
@@ -109,7 +138,8 @@ export function RotatingGlobe({ incidents, selectedIncident }: RotatingGlobeProp
         .ringLng("lng")
         .ringColor((point) => {
           const outage = point as GlobePoint;
-          return (t: number) => `${outage.color}${Math.round((1 - t) * 180).toString(16).padStart(2, "0")}`;
+          const maxAlpha = confidenceOpacity[outage.confidence ?? "medium"] * 0.72;
+          return (t: number) => withAlpha(outage.baseColor, Math.max(0, (1 - t) * maxAlpha));
         })
         .ringMaxRadius(4.8)
         .ringPropagationSpeed(1.6)
@@ -195,4 +225,13 @@ export function RotatingGlobe({ incidents, selectedIncident }: RotatingGlobeProp
       <div className="rotating-globe-scan" />
     </div>
   );
+}
+
+function withAlpha(hex: string, alpha: number) {
+  const normalized = hex.replace("#", "");
+  const red = Number.parseInt(normalized.slice(0, 2), 16);
+  const green = Number.parseInt(normalized.slice(2, 4), 16);
+  const blue = Number.parseInt(normalized.slice(4, 6), 16);
+
+  return `rgba(${red}, ${green}, ${blue}, ${alpha})`;
 }

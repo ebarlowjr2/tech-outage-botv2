@@ -15,6 +15,10 @@ export interface Incident {
   summary: string;
   impactedServices: string[];
   updates: number;
+  confidence?: "low" | "medium" | "high";
+  confidenceScore?: number;
+  source?: string;
+  rawUrl?: string;
 }
 
 export interface ProviderSummary {
