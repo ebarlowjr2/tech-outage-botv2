@@ -27,21 +27,22 @@ export function MainSituationPanel({ incident, incidents }: MainSituationPanelPr
         <div className="hero-map" />
         <RotatingGlobe incidents={incidents} selectedIncident={incident} />
 
-        <div className="relative z-10 flex items-center justify-between text-xs text-[color:var(--muted-2)] uppercase tracking-[0.3em]">
+        <div className="hero-status-line">
           <span>{incident.provider}</span>
           <span>{incident.timestamp}</span>
         </div>
 
-        <div className="relative z-10 max-w-2xl">
-          <h2 className="text-2xl font-semibold text-white/95 leading-tight">
+        <section className="hero-incident-card">
+          <div className="small-label">Selected signal</div>
+          <h2 className="mt-3 text-xl font-semibold text-white/95 leading-tight">
             {incident.title}
           </h2>
-          <p className="text-sm text-[color:var(--muted)] mt-3 leading-relaxed">
+          <p className="text-xs text-[color:var(--muted)] mt-3 leading-relaxed">
             {incident.summary}
           </p>
-        </div>
+        </section>
 
-        <div className="relative z-10 grid grid-cols-3 gap-4 text-xs text-[color:var(--muted)]">
+        <div className="hero-meta-grid">
           <div>
             <div className="small-label">Region</div>
             <div className="font-mono text-sm text-white/90 mt-2">{incident.region}</div>
@@ -56,7 +57,7 @@ export function MainSituationPanel({ incident, incidents }: MainSituationPanelPr
           </div>
         </div>
 
-        <div className="relative z-10 text-xs text-[color:var(--muted-2)] uppercase tracking-[0.24em]">
+        <div className="hero-impacted-services">
           Impacted services: {incident.impactedServices.join(" · ")}
         </div>
 
