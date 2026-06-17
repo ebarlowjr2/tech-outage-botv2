@@ -1,0 +1,45 @@
+name: Outage ingestion
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: outage-ingestion
+  cancel-in-progress: false
+
+jobs:
+  ingest:
+    name: Trigger outage ingestion
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      INGESTION_ENDPOINT: ${{ vars.OUTAGE_INGESTION_URL || 'https://tech-outage-botv2.vercel.app/api/ingestion/outages/run' }}
+    steps:
+      - name: Call ingestion endpoint
+        env:
+          INGESTION_SECRET: ${{ secrets.INGESTION_SECRET }}
+        run: |
+          if [ -z "$INGESTION_SECRET" ]; then
+            echo "Missing required GitHub Actions secret: INGESTION_SECRET"
+            exit 1
+          fi
+
+          response_file="$(mktemp)"
+          status_code="$(
+            curl --silent --show-error --location \
+              --request POST "$INGESTION_ENDPOINT" \
+              --header "Authorization: Bearer $INGESTION_SECRET" \
+              --header "Content-Type: application/json" \
+              --output "$response_file" \
+              --write-out "%{http_code}"
+          )"
+
+          echo "Ingestion endpoint returned HTTP $status_code"
+          cat "$response_file"
+          echo
+
+          if [ "$status_code" -lt 200 ] || [ "$status_code" -ge 300 ]; then
+            exit 1
+          fi
