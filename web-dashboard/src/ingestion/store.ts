@@ -49,6 +49,36 @@ export async function upsertOutageEvents(events: NormalizedOutageEvent[]): Promi
   }
 }
 
+export async function recordIngestionRun({
+  source,
+  status,
+  eventsCount,
+  errorMessage,
+  startedAt,
+  completedAt,
+}: {
+  source: string;
+  status: "ok" | "error" | "disabled";
+  eventsCount: number;
+  errorMessage?: string | null;
+  startedAt: string;
+  completedAt?: string;
+}): Promise<void> {
+  const supabase = createServerSupabaseClient();
+  const { error } = await supabase.from("ingestion_runs").insert({
+    source,
+    status,
+    events_count: eventsCount,
+    error_message: errorMessage ?? null,
+    started_at: startedAt,
+    completed_at: completedAt ?? new Date().toISOString(),
+  });
+
+  if (error) {
+    console.warn(`[ingestion] failed to record run for ${source}: ${error.message}`);
+  }
+}
+
 function toOutageEventRow(event: NormalizedOutageEvent): OutageEventRow {
   return {
     event_id: event.event_id,

@@ -1,5 +1,5 @@
 import type { NormalizedOutageEvent } from "./types";
-import { upsertOutageEvents } from "./store";
+import { recordIngestionRun, upsertOutageEvents } from "./store";
 import { STATUSPAGE_PROVIDERS, fetchStatusPageProvider } from "./sources/statusPages";
 import * as bgp from "./sources/bgp";
 import * as cloudflareRadar from "./sources/cloudflareRadar";
@@ -39,14 +39,42 @@ export async function runOutageIngestionOnce(): Promise<{
   const sourceCounts: Record<string, number> = {};
 
   for (const provider of STATUSPAGE_PROVIDERS) {
-    const events = await fetchStatusPageProvider(provider);
-    sourceCounts[provider.provider] = events.length;
-    allEvents.push(...events);
+    const startedAt = new Date().toISOString();
+
+    try {
+      const events = await fetchStatusPageProvider(provider);
+      sourceCounts[provider.provider] = events.length;
+      allEvents.push(...events);
+      await recordIngestionRun({
+        source: provider.provider,
+        status: "ok",
+        eventsCount: events.length,
+        startedAt,
+      });
+    } catch (error) {
+      sourceCounts[provider.provider] = 0;
+      await recordIngestionRun({
+        source: provider.provider,
+        status: "error",
+        eventsCount: 0,
+        errorMessage: error instanceof Error ? error.message : "Unknown ingestion error",
+        startedAt,
+      });
+    }
   }
 
   for (const source of PLACEHOLDER_SOURCES) {
+    const startedAt = new Date().toISOString();
+
     if (!source.isEnabled()) {
       sourceCounts[source.name] = 0;
+      await recordIngestionRun({
+        source: source.name,
+        status: "disabled",
+        eventsCount: 0,
+        errorMessage: "Missing API key or source not configured",
+        startedAt,
+      });
       continue;
     }
 
@@ -54,9 +82,22 @@ export async function runOutageIngestionOnce(): Promise<{
       const events = await source.normalizeEvents();
       sourceCounts[source.name] = events.length;
       allEvents.push(...events);
+      await recordIngestionRun({
+        source: source.name,
+        status: "ok",
+        eventsCount: events.length,
+        startedAt,
+      });
     } catch (error) {
       sourceCounts[source.name] = 0;
       console.warn(`[ingestion] ${source.name} failed`, error);
+      await recordIngestionRun({
+        source: source.name,
+        status: "error",
+        eventsCount: 0,
+        errorMessage: error instanceof Error ? error.message : "Unknown ingestion error",
+        startedAt,
+      });
     }
   }
 

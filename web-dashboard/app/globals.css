@@ -46,6 +46,43 @@ body {
   flex-direction: column;
   padding: 18px 20px 16px;
   gap: 12px;
+  overflow: hidden;
+}
+
+.dashboard-filters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 2px 1px;
+}
+
+.filter-chip {
+  flex: 0 0 auto;
+  padding: 6px 9px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(6, 9, 14, 0.76);
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+
+.filter-chip.active {
+  border-color: rgba(62, 244, 194, 0.42);
+  background: rgba(62, 244, 194, 0.1);
+  color: var(--teal);
+}
+
+.filter-chip.active-muted {
+  border-color: rgba(255, 191, 75, 0.4);
+  background: rgba(255, 191, 75, 0.1);
+  color: var(--amber);
 }
 
 .panel-frame {

@@ -23,7 +23,7 @@ export function StatsRail({
   const denominator = Math.max(total, 1);
 
   return (
-    <div className="flex flex-col gap-2 h-full min-h-0 overflow-y-auto pr-1">
+    <div className="analytics-rail flex flex-col gap-2 h-full min-h-0 overflow-y-auto pr-1">
       <PanelFrame title="Active Outages" subtitle="Current tracked incidents">
         <div className="text-2xl font-semibold text-white/95">{activeCount}</div>
         <div className="text-xs text-[color:var(--muted)] mt-1">Monitoring {total} total signals</div>

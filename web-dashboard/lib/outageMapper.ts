@@ -1,5 +1,7 @@
 import type { Incident } from "./types";
 import type { NormalizedOutageEvent } from "@/src/ingestion/types";
+import { getCategoryDisplay } from "./categoryDisplay";
+import { getProviderLocation } from "./providerLocations";
 
 const statusLabel: Record<NormalizedOutageEvent["status"], Incident["status"]> = {
   investigating: "Investigating",
@@ -29,30 +31,62 @@ const fallbackCoords = {
 };
 
 export function mapOutageEventToIncident(event: NormalizedOutageEvent): Incident {
+  const providerLocation = getProviderLocation(event.provider);
   const coords = fallbackCoords[event.category] ?? fallbackCoords.unknown;
+  const hasPreciseLocation = typeof event.location.lat === "number" && typeof event.location.lon === "number";
+  const fallbackLocation = providerLocation
+    ? { lat: providerLocation.lat, lng: providerLocation.lon }
+    : coords;
+  const categoryDisplay = getCategoryDisplay(event.category);
   const impactedServices = event.impact?.impacted_services?.length
     ? event.impact.impacted_services
     : ([event.service, event.category].filter(Boolean) as string[]);
+  const isActive = !["resolved", "maintenance"].includes(event.status);
 
   return {
     id: `${event.source}:${event.event_id}`,
     provider: event.provider || event.source,
     title: event.title,
     severity: event.severity,
-    region: event.location.region || event.location.country || "global",
-    lat: event.location.lat ?? coords.lat,
-    lng: event.location.lon ?? coords.lng,
+    region: getRegionLabel(event, providerLocation, hasPreciseLocation),
+    lat: event.location.lat ?? fallbackLocation.lat,
+    lng: event.location.lon ?? fallbackLocation.lng,
     timestamp: formatTimestamp(event.updated_at),
     status: statusLabel[event.status],
-    category: event.category.replace("_", " "),
+    statusCode: event.status,
+    category: event.category,
+    categoryLabel: categoryDisplay.label,
     summary: event.summary,
     impactedServices,
     updates: 1,
     confidence: event.confidence,
     confidenceScore: event.confidence_score,
     source: event.source,
+    sourceType: event.source_type,
     rawUrl: event.raw_url,
+    updatedAt: event.updated_at,
+    resolvedAt: event.resolved_at,
+    isActive,
+    isResolved: event.status === "resolved",
+    isMaintenance: event.status === "maintenance",
+    locationApproximate: !hasPreciseLocation,
   };
+}
+
+function getRegionLabel(
+  event: NormalizedOutageEvent,
+  providerLocation: ReturnType<typeof getProviderLocation>,
+  hasPreciseLocation: boolean,
+) {
+  if (hasPreciseLocation) {
+    return event.location.region || event.location.country || event.location.city || "global";
+  }
+
+  if (providerLocation) {
+    return "Provider/global reference point";
+  }
+
+  return event.location.region || event.location.country || "global reference point";
 }
 
 function formatTimestamp(value: string) {

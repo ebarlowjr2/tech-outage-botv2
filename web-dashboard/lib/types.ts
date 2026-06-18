@@ -11,14 +11,23 @@ export interface Incident {
   lng: number;
   timestamp: string;
   status: IncidentStatus;
+  statusCode?: string;
   category: string;
+  categoryLabel?: string;
   summary: string;
   impactedServices: string[];
   updates: number;
   confidence?: "low" | "medium" | "high";
   confidenceScore?: number;
   source?: string;
+  sourceType?: string;
   rawUrl?: string;
+  updatedAt?: string;
+  resolvedAt?: string | null;
+  isActive?: boolean;
+  isResolved?: boolean;
+  isMaintenance?: boolean;
+  locationApproximate?: boolean;
 }
 
 export interface ProviderSummary {
@@ -40,6 +49,19 @@ export interface SourceHealthItem {
   status: "Healthy" | "Lagging" | "Degraded";
   latencyMs: number;
   lastCheck: string;
+}
+
+export interface IngestionSourceStatus {
+  source: string;
+  status: "ok" | "error" | "disabled";
+  events_count: number;
+  last_run_at: string | null;
+  error_message?: string | null;
+}
+
+export interface IngestionStatusSummary {
+  last_run_at: string | null;
+  sources: IngestionSourceStatus[];
 }
 
 export interface RecentUpdate {

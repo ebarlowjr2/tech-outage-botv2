@@ -17,7 +17,7 @@ export function SourceHealthList({ items }: { items: SourceHealthItem[] }) {
           </div>
           <div className="text-right">
             <div className={`text-xs font-semibold ${statusColor[item.status]}`}>{item.status}</div>
-            <div className="text-[11px] text-[color:var(--muted-2)] font-mono mt-1">{item.latencyMs} ms</div>
+            <div className="text-[11px] text-[color:var(--muted-2)] font-mono mt-1">{item.latencyMs} events</div>
           </div>
         </div>
       ))}

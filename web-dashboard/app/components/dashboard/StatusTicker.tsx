@@ -7,7 +7,13 @@ const toneColor: Record<TickerItem["tone"], string> = {
 };
 
 export function StatusTicker({ items }: { items: TickerItem[] }) {
-  const merged = [...items, ...items];
+  const fallback: TickerItem = {
+    id: "global-watch",
+    text: "GLOBAL WATCH ACTIVE - No confirmed active outages detected - Monitoring cloud, telecom, satellite, power, CDN, DNS, and routing sources",
+    tone: "info",
+  };
+  const sourceItems = items.length ? items : [fallback];
+  const merged = [...sourceItems, ...sourceItems];
 
   return (
     <div className="ticker">

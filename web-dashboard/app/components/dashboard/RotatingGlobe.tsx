@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef } from "react";
 import type { GlobeInstance } from "globe.gl";
 import type { Incident, Severity } from "@/lib/types";
+import { getCategoryDisplay } from "@/lib/categoryDisplay";
 
 interface RotatingGlobeProps {
   incidents: Incident[];
@@ -17,9 +18,14 @@ interface GlobePoint {
   lng: number;
   severity: Severity;
   category: string;
+  categoryLabel: string;
+  status: string;
+  isResolved?: boolean;
+  isMaintenance?: boolean;
   baseColor: string;
   color: string;
   size: number;
+  altitude: number;
   confidence?: Incident["confidence"];
   confidenceScore?: number;
   source?: string;
@@ -52,7 +58,7 @@ const confidenceOpacity: Record<NonNullable<Incident["confidence"]>, number> = {
 const confidenceLabel: Record<NonNullable<Incident["confidence"]>, string> = {
   high: "Confirmed",
   medium: "Likely / Monitoring",
-  low: "Unconfirmed signal",
+  low: "Unconfirmed Signal",
 };
 
 export function RotatingGlobe({ incidents, selectedIncident }: RotatingGlobeProps) {
@@ -61,23 +67,36 @@ export function RotatingGlobe({ incidents, selectedIncident }: RotatingGlobeProp
 
   const points = useMemo<GlobePoint[]>(
     () =>
-      incidents.map((incident) => ({
-        id: incident.id,
-        provider: incident.provider,
-        title: incident.title,
-        lat: incident.lat,
-        lng: incident.lng,
-        severity: incident.severity,
-        category: incident.category,
-        baseColor: severityColor[incident.severity],
-        color: withAlpha(severityColor[incident.severity], confidenceOpacity[incident.confidence ?? "medium"]),
-        size: incident.severity === "critical" ? 0.42 : incident.severity === "major" ? 0.34 : 0.26,
-        confidence: incident.confidence,
-        confidenceScore: incident.confidenceScore,
-        source: incident.source,
-        rawUrl: incident.rawUrl,
-      })),
-    [incidents],
+      incidents
+        .filter((incident) => incident.confidence !== "low" || incident.id === selectedIncident?.id)
+        .map((incident) => {
+          const baseColor = severityColor[incident.severity];
+          const opacity = getMarkerOpacity(incident);
+          const category = getCategoryDisplay(incident.category);
+
+          return {
+            id: incident.id,
+            provider: incident.provider,
+            title: incident.title,
+            lat: incident.lat,
+            lng: incident.lng,
+            severity: incident.severity,
+            category: incident.category,
+            categoryLabel: category.label,
+            status: incident.status,
+            isResolved: incident.isResolved,
+            isMaintenance: incident.isMaintenance,
+            baseColor,
+            color: withAlpha(baseColor, opacity),
+            size: getMarkerSize(incident.severity),
+            altitude: getMarkerAltitude(incident),
+            confidence: incident.confidence,
+            confidenceScore: incident.confidenceScore,
+            source: incident.source,
+            rawUrl: incident.rawUrl,
+          };
+        }),
+    [incidents, selectedIncident?.id],
   );
 
   const arcs = useMemo<GlobeArc[]>(
@@ -118,16 +137,17 @@ export function RotatingGlobe({ incidents, selectedIncident }: RotatingGlobeProp
         .atmosphereAltitude(0.18)
         .pointLat("lat")
         .pointLng("lng")
-        .pointAltitude(0.025)
+        .pointAltitude("altitude")
         .pointRadius("size")
         .pointColor("color")
         .pointLabel((point) => {
           const outage = point as GlobePoint;
           return [
             `<strong>${outage.title}</strong>`,
-            `${outage.provider} | ${outage.category}`,
+            `${outage.provider} | ${outage.categoryLabel}`,
             `Severity: ${outage.severity}`,
-            `Confidence: ${confidenceLabel[outage.confidence ?? "medium"]}`,
+            `Status: ${outage.status}`,
+            `Signal: ${getMarkerLabel(outage)}`,
             outage.source ? `Source: ${outage.source}` : undefined,
             outage.rawUrl ? `<a href="${outage.rawUrl}" target="_blank" rel="noreferrer">Raw source</a>` : undefined,
           ].filter(Boolean).join("<br/>");
@@ -138,7 +158,7 @@ export function RotatingGlobe({ incidents, selectedIncident }: RotatingGlobeProp
         .ringLng("lng")
         .ringColor((point) => {
           const outage = point as GlobePoint;
-          const maxAlpha = confidenceOpacity[outage.confidence ?? "medium"] * 0.72;
+          const maxAlpha = getPointOpacity(outage) * 0.72;
           return (t: number) => withAlpha(outage.baseColor, Math.max(0, (1 - t) * maxAlpha));
         })
         .ringMaxRadius(4.8)
@@ -225,6 +245,40 @@ export function RotatingGlobe({ incidents, selectedIncident }: RotatingGlobeProp
       <div className="rotating-globe-scan" />
     </div>
   );
+}
+
+function getMarkerSize(severity: Severity) {
+  if (severity === "critical") return 0.45;
+  if (severity === "major") return 0.34;
+  if (severity === "minor") return 0.24;
+  return 0.16;
+}
+
+function getMarkerAltitude(incident: Incident) {
+  if (incident.isMaintenance) return 0.03;
+  if (incident.isResolved) return 0.04;
+  if (incident.severity === "critical" || incident.severity === "major") return 0.18;
+  return 0.1;
+}
+
+function getMarkerOpacity(incident: Incident) {
+  const confidence = confidenceOpacity[incident.confidence ?? "medium"];
+  if (incident.isMaintenance) return Math.min(confidence, 0.25);
+  if (incident.isResolved) return Math.min(confidence, 0.35);
+  return confidence;
+}
+
+function getPointOpacity(point: GlobePoint) {
+  const confidence = confidenceOpacity[point.confidence ?? "medium"];
+  if (point.isResolved) return Math.min(confidence, 0.35);
+  if (point.isMaintenance) return Math.min(confidence, 0.25);
+  return confidence;
+}
+
+function getMarkerLabel(point: GlobePoint) {
+  if (point.isResolved) return "Resolved";
+  if (point.isMaintenance) return "Maintenance";
+  return confidenceLabel[point.confidence ?? "medium"];
 }
 
 function withAlpha(hex: string, alpha: number) {

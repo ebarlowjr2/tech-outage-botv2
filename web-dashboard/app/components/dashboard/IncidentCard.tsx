@@ -1,6 +1,7 @@
 import { Incident } from "@/lib/types";
 import { SeverityBadge } from "./SeverityBadge";
 import { cn } from "@/lib/utils";
+import { getCategoryDisplay } from "@/lib/categoryDisplay";
 
 interface IncidentCardProps {
   incident: Incident;
@@ -9,6 +10,8 @@ interface IncidentCardProps {
 }
 
 export function IncidentCard({ incident, selected, onSelect }: IncidentCardProps) {
+  const category = getCategoryDisplay(incident.category);
+
   return (
     <button
       type="button"
@@ -20,7 +23,7 @@ export function IncidentCard({ incident, selected, onSelect }: IncidentCardProps
         <SeverityBadge severity={incident.severity} />
       </div>
       <div className="text-[11px] text-[color:var(--muted-2)] uppercase tracking-[0.32em]">
-        {incident.category}
+        {incident.isResolved ? "Recent resolved" : category.label}
       </div>
       <div className="text-sm text-white/90">{incident.title}</div>
       <div className="flex items-center justify-between text-xs text-[color:var(--muted)] mt-2 font-mono">

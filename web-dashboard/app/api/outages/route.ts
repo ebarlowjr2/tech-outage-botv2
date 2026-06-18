@@ -42,6 +42,7 @@ type OutageEventRow = {
 
 type FilterableQuery = {
   in: (column: string, values: string[]) => FilterableQuery;
+  eq: (column: string, value: string) => FilterableQuery;
 };
 
 const severityRank: Record<Severity, number> = {
@@ -51,18 +52,35 @@ const severityRank: Record<Severity, number> = {
   info: 1,
 };
 
+const confidenceRank: Record<ConfidenceLevel, number> = {
+  high: 3,
+  medium: 2,
+  low: 1,
+};
+
+const activeStatuses: OutageStatus[] = [
+  "investigating",
+  "identified",
+  "monitoring",
+  "degraded",
+  "partial_outage",
+  "major_outage",
+  "unknown",
+];
+
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const filters = Object.fromEntries(searchParams.entries());
   const statusFilter = searchParams.get("status") || "active";
   const since = searchParams.get("since") || new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+  const limit = normalizeLimit(searchParams.get("limit"));
 
   try {
     const supabase = createServerSupabaseClient();
     let query = supabase.from("outage_events").select("*").gte("updated_at", since);
 
     if (statusFilter === "active") {
-      query = query.not("status", "in", "(resolved,maintenance)");
+      query = query.in("status", activeStatuses);
     } else if (statusFilter === "resolved") {
       query = query.eq("status", "resolved");
     }
@@ -70,6 +88,7 @@ export async function GET(request: NextRequest) {
     query = applyInFilter(query, "category", searchParams.get("category"));
     query = applyInFilter(query, "confidence", searchParams.get("confidence"));
     query = applyInFilter(query, "severity", searchParams.get("severity"));
+    query = applyInFilter(query, "provider", searchParams.get("provider"));
 
     if (searchParams.get("country")) {
       query = query.eq("country", searchParams.get("country"));
@@ -79,7 +98,7 @@ export async function GET(request: NextRequest) {
       query = query.neq("confidence", "low");
     }
 
-    const { data, error } = await query.limit(200);
+    const { data, error } = await query.limit(limit);
 
     if (error) {
       throw error;
@@ -95,6 +114,7 @@ export async function GET(request: NextRequest) {
         filters: {
           status: statusFilter,
           since,
+          limit,
           ...filters,
         },
       },
@@ -125,6 +145,12 @@ function applyInFilter<TQuery extends FilterableQuery>(query: TQuery, column: st
 
   if (!values.length) return query;
   return query.in(column, values) as TQuery;
+}
+
+function normalizeLimit(value: string | null) {
+  const parsed = Number.parseInt(value || "100", 10);
+  if (Number.isNaN(parsed)) return 100;
+  return Math.min(Math.max(parsed, 1), 250);
 }
 
 function toNormalizedOutageEvent(row: OutageEventRow): NormalizedOutageEvent {
@@ -172,8 +198,14 @@ function toNormalizedOutageEvent(row: OutageEventRow): NormalizedOutageEvent {
 
 function sortEvents(a: NormalizedOutageEvent, b: NormalizedOutageEvent) {
   return (
-    b.confidence_score - a.confidence_score ||
+    Number(isActiveEvent(b)) - Number(isActiveEvent(a)) ||
     severityRank[b.severity] - severityRank[a.severity] ||
+    confidenceRank[b.confidence] - confidenceRank[a.confidence] ||
+    b.confidence_score - a.confidence_score ||
     new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
   );
+}
+
+function isActiveEvent(event: NormalizedOutageEvent) {
+  return !["resolved", "maintenance"].includes(event.status);
 }

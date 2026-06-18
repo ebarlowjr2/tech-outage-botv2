@@ -7,9 +7,10 @@ import { RotatingGlobe } from "./RotatingGlobe";
 interface MainSituationPanelProps {
   incident: Incident;
   incidents: Incident[];
+  mode?: "active" | "recent";
 }
 
-export function MainSituationPanel({ incident, incidents }: MainSituationPanelProps) {
+export function MainSituationPanel({ incident, incidents, mode = "active" }: MainSituationPanelProps) {
   return (
     <div className="panel-frame flex flex-col h-full">
       <div className="panel-header">
@@ -33,7 +34,12 @@ export function MainSituationPanel({ incident, incidents }: MainSituationPanelPr
         </div>
 
         <section className="hero-incident-card">
-          <div className="small-label">Selected signal</div>
+          <div className="small-label">{mode === "recent" ? "Global Watch" : "Selected signal"}</div>
+          {mode === "recent" && (
+            <div className="mt-2 text-[11px] leading-relaxed text-[color:var(--muted)]">
+              No confirmed active outages detected. Showing recent resolved and monitored events from the last 72 hours.
+            </div>
+          )}
           <h2 className="mt-3 text-xl font-semibold text-white/95 leading-tight">
             {incident.title}
           </h2>
@@ -46,10 +52,13 @@ export function MainSituationPanel({ incident, incidents }: MainSituationPanelPr
           <div>
             <div className="small-label">Region</div>
             <div className="font-mono text-sm text-white/90 mt-2">{incident.region}</div>
+            {incident.locationApproximate && (
+              <div className="mt-1 text-[10px] text-[color:var(--muted-2)]">Approximate reference</div>
+            )}
           </div>
           <div>
             <div className="small-label">Category</div>
-            <div className="font-mono text-sm text-white/90 mt-2">{incident.category}</div>
+            <div className="font-mono text-sm text-white/90 mt-2">{incident.categoryLabel ?? incident.category}</div>
           </div>
           <div>
             <div className="small-label">Updates</div>
