@@ -1,0 +1,9 @@
+services:
+  streamer:
+    build: .
+    container_name: tech-outage-streamer
+    restart: unless-stopped
+    env_file: .env
+    # Chromium needs more shared memory than Docker's 64MB default or it crashes.
+    shm_size: "1gb"
+    stop_grace_period: 15s
