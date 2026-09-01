@@ -183,8 +183,6 @@ export default function Page() {
   return (
     <DashboardShell>
       <TopBar
-        localTime="21:42"
-        utcTime="01:42"
         streamStatus="Stream Nominal"
         sourceCount={ingestionStatus?.sources.length ?? sourceHealth.length}
       />
