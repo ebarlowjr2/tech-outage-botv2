@@ -1,16 +1,27 @@
 import { Incident } from "@/lib/types";
+import type { PresenterState } from "@/src/types/realtime";
 import { SeverityBadge } from "./SeverityBadge";
-import { PresenterDockPlaceholder } from "./PresenterDockPlaceholder";
-import { CaptionBarPlaceholder } from "./CaptionBarPlaceholder";
+import { RobotPresenter } from "./RobotPresenter";
+import { CaptionBar } from "./CaptionBar";
 import { RotatingGlobe } from "./RotatingGlobe";
 
 interface MainSituationPanelProps {
   incident: Incident;
   incidents: Incident[];
   mode?: "active" | "recent";
+  presenterState: PresenterState;
+  caption: string | null;
+  isSpeaking: boolean;
 }
 
-export function MainSituationPanel({ incident, incidents, mode = "active" }: MainSituationPanelProps) {
+export function MainSituationPanel({
+  incident,
+  incidents,
+  mode = "active",
+  presenterState,
+  caption,
+  isSpeaking,
+}: MainSituationPanelProps) {
   return (
     <div className="panel-frame flex flex-col h-full">
       <div className="panel-header">
@@ -70,8 +81,10 @@ export function MainSituationPanel({ incident, incidents, mode = "active" }: Mai
           Impacted services: {incident.impactedServices.join(" · ")}
         </div>
 
-        <PresenterDockPlaceholder />
-        <CaptionBarPlaceholder />
+        <div className="presenter-dock presenter-dock--live">
+          <RobotPresenter state={presenterState} isSpeaking={isSpeaking} />
+        </div>
+        <CaptionBar text={caption} isSpeaking={isSpeaking} />
       </div>
     </div>
   );
