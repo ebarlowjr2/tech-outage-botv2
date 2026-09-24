@@ -3,12 +3,15 @@ FROM debian:bookworm-slim
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Chromium (Debian ships a real .deb, not a snap), ffmpeg, virtual X server,
-# and fonts so the dashboard + emoji/CJK render correctly on the stream.
+# PulseAudio (to route the dashboard's TTS voice into the stream), and fonts
+# so the dashboard + emoji/CJK render correctly on the stream.
 RUN apt-get update && apt-get install -y --no-install-recommends \
       chromium \
       chromium-sandbox \
       ffmpeg \
       xvfb \
+      pulseaudio \
+      pulseaudio-utils \
       ca-certificates \
       procps \
       tini \
@@ -19,9 +22,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       fonts-noto-cjk \
     && rm -rf /var/lib/apt/lists/*
 
+# PulseAudio refuses to run as root, so the stream runs as an unprivileged user.
+RUN useradd -m -s /bin/bash botuser
+
 COPY stream.sh /usr/local/bin/stream.sh
 RUN chmod +x /usr/local/bin/stream.sh
 
-# tini reaps the Xvfb/Chromium/ffmpeg child processes cleanly.
+USER botuser
+ENV HOME=/home/botuser
+
+# tini reaps the Xvfb/PulseAudio/Chromium/ffmpeg child processes cleanly.
 ENTRYPOINT ["/usr/bin/tini", "--"]
 CMD ["/usr/local/bin/stream.sh"]
