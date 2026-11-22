@@ -10,6 +10,7 @@ import { StatsRail } from "./components/dashboard/StatsRail";
 import { StatusTicker } from "./components/dashboard/StatusTicker";
 import { DashboardFilters, type DashboardFilterState } from "./components/dashboard/DashboardFilters";
 import { mapOutageEventToIncident } from "@/lib/outageMapper";
+import { usePresenter } from "@/lib/usePresenter";
 import type {
   Incident,
   IngestStatus,
@@ -177,6 +178,7 @@ export default function Page() {
   }, [incidents, ingestionStatus]);
 
   const activeCount = useMemo(() => activeIncidents(incidents).length, [incidents]);
+  const presenter = usePresenter(incidents, activeCount);
   const sourceHealth = useMemo(() => mapSourceHealth(ingestionStatus) ?? mockSourceHealth, [ingestionStatus]);
   const ingestStatusItems = useMemo(() => mapIngestStatus(ingestionStatus) ?? ingestStatus, [ingestionStatus]);
 
@@ -202,7 +204,14 @@ export default function Page() {
           <IncidentFeed incidents={incidents} selectedId={selectedId} onSelect={setSelectedId} />
         </PanelFrame>
 
-        <MainSituationPanel incident={selectedIncident} incidents={incidents} mode={feedMode} />
+        <MainSituationPanel
+          incident={selectedIncident}
+          incidents={incidents}
+          mode={feedMode}
+          presenterState={presenter.state}
+          caption={presenter.caption}
+          isSpeaking={presenter.isSpeaking}
+        />
 
         <StatsRail
           activeCount={activeCount}
